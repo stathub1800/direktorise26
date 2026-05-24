@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome untuk Ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PapaParse untuk Membaca file CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -95,6 +97,16 @@
                             <option value="Pesawaran">Pesawaran</option>
                             <option value="Lampung Selatan">Lampung Selatan</option>
                             <option value="Lampung Tengah">Lampung Tengah</option>
+                            <option value="Lampung Utara">Lampung Utara</option>
+                            <option value="Lampung Barat">Lampung Barat</option>
+                            <option value="Lampung Timur">Lampung Timur</option>
+                            <option value="Tulang Bawang">Tulang Bawang</option>
+                            <option value="Tulang Bawang Barat">Tulang Bawang Barat</option>
+                            <option value="Mesuji">Mesuji</option>
+                            <option value="Tanggamus">Tanggamus</option>
+                            <option value="Pesisir Barat">Pesisir Barat</option>
+                            <option value="Way Kanan">Way Kanan</option>
+                            <option value="Pringsewu">Pringsewu</option>
                         </select>
                         <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
                     </div>
@@ -105,11 +117,21 @@
                 </div>
             </div>
 
-            <!-- Tombol Cari & Tambah -->
+            <!-- Tombol Cari & Tambah & Upload Bulk -->
             <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-t pt-6">
-                <button onclick="bukaModalTambah()" class="text-purple-600 font-medium hover:text-purple-800 transition-colors flex items-center gap-2">
-                    <i class="fas fa-plus-circle"></i> Usaha tidak ditemukan? Tambah Baru
-                </button>
+                <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center">
+                    <button onclick="bukaModalTambah()" class="text-purple-600 font-medium hover:text-purple-800 transition-colors flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i> Tambah Baru
+                    </button>
+                    <span class="hidden sm:inline text-gray-300">|</span>
+                    
+                    <!-- Form Hidden untuk File CSV -->
+                    <input type="file" id="input-csv" accept=".csv" class="hidden" onchange="prosesUploadCSV(event)">
+                    <button onclick="document.getElementById('input-csv').click()" class="text-green-600 font-medium hover:text-green-800 transition-colors flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200">
+                        <i class="fas fa-file-csv"></i> Upload Data CSV
+                    </button>
+                </div>
+
                 <button onclick="cariUsaha()" class="w-full sm:w-auto bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-xl font-medium transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-search"></i> Cari Data
                 </button>
@@ -162,6 +184,16 @@
                         <option value="Pesawaran">Pesawaran</option>
                         <option value="Lampung Selatan">Lampung Selatan</option>
                         <option value="Lampung Tengah">Lampung Tengah</option>
+                        <option value="Lampung Utara">Lampung Utara</option>
+                        <option value="Lampung Barat">Lampung Barat</option>
+                        <option value="Lampung Timur">Lampung Timur</option>
+                        <option value="Tulang Bawang">Tulang Bawang</option>
+                        <option value="Tulang Bawang Barat">Tulang Bawang Barat</option>
+                        <option value="Mesuji">Mesuji</option>
+                        <option value="Tanggamus">Tanggamus</option>
+                        <option value="Pesisir Barat">Pesisir Barat</option>
+                        <option value="Way Kanan">Way Kanan</option>
+                        <option value="Pringsewu">Pringsewu</option>
                     </select>
                 </div>
                 <div>
@@ -180,11 +212,23 @@
         </div>
     </div>
 
-        <script type="module">
+    <!-- SCRIPT FIREBASE & LOGIKA UTAMA -->
+    <script type="module">
+        // 1. Import fungsi-fungsi Firebase yang dibutuhkan (menambahkan writeBatch)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            addDoc, 
+            doc, 
+            updateDoc, 
+            query, 
+            where,
+            writeBatch
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // Nanti ganti dengan konfigurasi dari Firebase Anda
+        // 2. PASTE FIREBASE CONFIG ANDA DI SINI
         const firebaseConfig = {
             apiKey: "AIzaSyDT3VUNM6LZYZItOtuyItqXYVvG6J8fx-s",
             authDomain: "se2026-f3003.firebaseapp.com",
@@ -193,28 +237,20 @@
             messagingSenderId: "80341327498",
             appId: "1:80341327498:web:0cf9a854246eb784be5773"
         };
+
+        // Inisialisasi Firebase & Database
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-    </script> 
-    -->
 
-    <script>
-        // ==========================================
-        // DATA DUMMY (Untuk Demo sebelum ada Firebase)
-        // ==========================================
-        let dataUsaha = [
-            { id: "1", nib: "1234567890123", nama: "PT Laju Jaya Lampung", provinsi: "LAMPUNG", kabupaten: "Bandar Lampung", alamat: "Jl. Teuku Umar No 15", email: "info@lajujaya.co.id", email_terverifikasi: false },
-            { id: "2", nib: "9876543210987", nama: "CV Kopi Pesawaran Makmur", provinsi: "LAMPUNG", kabupaten: "Pesawaran", alamat: "Desa Gedong Tataan RT 01", email: "", email_terverifikasi: false },
-            { id: "3", nib: "1122334455667", nama: "Toko Material Bangun", provinsi: "LAMPUNG", kabupaten: "Lampung Selatan", alamat: "Jl. Lintas Sumatera Km 10", email: "salah@email.com", email_terverifikasi: false },
-            { id: "4", nib: "9988776655443", nama: "Klinik Sehat Metro", provinsi: "LAMPUNG", kabupaten: "Metro", alamat: "Jl. Jendral Sudirman No 88", email: "kliniksehat@gmail.com", email_terverifikasi: true }
-        ];
+        // Nama koleksi (tabel) di database Anda
+        const NAMA_KOLEKSI = "perusahaan";
 
         // ==========================================
         // LOGIKA TAMPILAN (TAB & MODAL)
         // ==========================================
-        let modePencarian = 'nib'; // default
+        let modePencarian = 'nib'; 
 
-        function switchTab(tab) {
+        window.switchTab = function(tab) {
             modePencarian = tab;
             const tabNib = document.getElementById('tab-nib');
             const tabNama = document.getElementById('tab-nama');
@@ -232,24 +268,24 @@
                 formNama.classList.remove('hidden');
                 formNib.classList.add('hidden');
             }
-        }
+        };
 
-        function bukaModalTambah() {
+        window.bukaModalTambah = function() {
             document.getElementById('modal-tambah').classList.remove('hidden');
             document.getElementById('modal-tambah').classList.add('flex');
-        }
+        };
 
-        function tutupModalTambah() {
+        window.tutupModalTambah = function() {
             document.getElementById('modal-tambah').classList.add('hidden');
             document.getElementById('modal-tambah').classList.remove('flex');
-        }
+        };
 
-        function tampilkanNotif(pesan, tipe = 'info') {
+        window.tampilkanNotif = function(pesan, tipe = 'info', tahanLama = false) {
             const notif = document.getElementById('notifikasi');
             const ikon = document.getElementById('notif-icon');
             const teks = document.getElementById('notif-pesan');
             
-            notif.classList.remove('hidden', 'bg-blue-50', 'text-blue-700', 'bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700');
+            notif.classList.remove('hidden', 'bg-blue-50', 'text-blue-700', 'bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700', 'bg-yellow-50', 'text-yellow-700');
             
             if (tipe === 'error') {
                 notif.classList.add('bg-red-50', 'text-red-700');
@@ -257,55 +293,176 @@
             } else if (tipe === 'success') {
                 notif.classList.add('bg-green-50', 'text-green-700');
                 ikon.className = 'fas fa-check-circle mt-0.5 text-lg';
+            } else if (tipe === 'warning') {
+                notif.classList.add('bg-yellow-50', 'text-yellow-700');
+                ikon.className = 'fas fa-spinner fa-spin mt-0.5 text-lg';
             } else {
                 notif.classList.add('bg-blue-50', 'text-blue-700');
                 ikon.className = 'fas fa-info-circle mt-0.5 text-lg';
             }
 
             teks.innerHTML = pesan;
-            setTimeout(() => notif.classList.add('hidden'), 5000); // Sembunyikan setelah 5 detik
-        }
-
-        // ==========================================
-        // LOGIKA PENCARIAN
-        // ==========================================
-        function cariUsaha() {
-            let hasil = [];
             
-            if (modePencarian === 'nib') {
-                const nibVal = document.getElementById('input-nib').value.trim();
-                if (!nibVal) {
-                    tampilkanNotif("Harap masukkan nomor NIB.", "error");
-                    return;
-                }
-                hasil = dataUsaha.filter(u => u.nib === nibVal);
-            } 
-            else {
-                const namaVal = document.getElementById('input-nama').value.trim().toLowerCase();
-                const alamatVal = document.getElementById('input-alamat').value.trim().toLowerCase();
-                const provVal = document.getElementById('select-provinsi').value;
-                const kabVal = document.getElementById('select-kabupaten').value;
-
-                if (!provVal) {
-                    tampilkanNotif("Provinsi wajib dipilih jika mencari berdasarkan Nama/Alamat.", "error");
-                    return;
-                }
-                if (!namaVal && !alamatVal) {
-                    tampilkanNotif("Harap masukkan setidaknya Nama Usaha atau Alamat.", "error");
-                    return;
-                }
-
-                hasil = dataUsaha.filter(u => {
-                    let cocok = u.provinsi === provVal;
-                    if (namaVal) cocok = cocok && u.nama.toLowerCase().includes(namaVal);
-                    if (alamatVal) cocok = cocok && u.alamat.toLowerCase().includes(alamatVal);
-                    if (kabVal) cocok = cocok && u.kabupaten === kabVal;
-                    return cocok;
-                });
+            if (!tahanLama) {
+                setTimeout(() => notif.classList.add('hidden'), 6000);
             }
+        };
 
-            renderHasil(hasil);
-        }
+        // ==========================================
+        // LOGIKA BULK UPLOAD DARI CSV (PAPAPARSE)
+        // ==========================================
+        window.prosesUploadCSV = function(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            window.tampilkanNotif("Sedang membaca file CSV... Mohon tunggu.", "warning", true);
+
+            // Gunakan PapaParse untuk membaca format CSV yang rumit (ada koma di dalam teks)
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: async function(results) {
+                    const data = results.data;
+                    if(data.length === 0) {
+                        window.tampilkanNotif("File CSV kosong atau format salah.", "error");
+                        document.getElementById('input-csv').value = '';
+                        return;
+                    }
+
+                    window.tampilkanNotif(`Mulai mengirim ${data.length} data ke database... <b>JANGAN TUTUP HALAMAN INI</b>.`, "warning", true);
+
+                    try {
+                        let batch = writeBatch(db);
+                        let hitungBatch = 0;
+                        let totalBerhasil = 0;
+
+                        // Looping semua baris di file CSV
+                        for (const baris of data) {
+                            // Mencocokkan nama kolom yang ada di file Excel/CSV Anda
+                            const namaUsaha = baris['Nama Usaha'] || baris['Nama Komersil'] || '';
+                            const nib = baris['NIB'] || '';
+                            const prov = (baris['prov'] || 'LAMPUNG').toUpperCase();
+                            const kab = baris['kabkot'] || '';
+                            const alamat = baris['Alamat'] || '';
+
+                            // Lewati jika datanya benar-benar kosong
+                            if (!namaUsaha && !nib) continue;
+
+                            const docRef = doc(collection(db, NAMA_KOLEKSI));
+                            batch.set(docRef, {
+                                nib: nib,
+                                nama: namaUsaha,
+                                provinsi: prov,
+                                kabupaten: kab,
+                                alamat: alamat,
+                                email: "",
+                                email_terverifikasi: false,
+                                waktu_dibuat: new Date()
+                            });
+
+                            hitungBatch++;
+                            totalBerhasil++;
+
+                            // Firestore membatasi maksimal 500 penulisan dalam 1 batch
+                            if (hitungBatch === 490) {
+                                await batch.commit(); // Kirim batch ke server
+                                batch = writeBatch(db); // Buat antrian batch baru
+                                hitungBatch = 0;
+                            }
+                        }
+
+                        // Kirim sisa data yang kurang dari 500
+                        if (hitungBatch > 0) {
+                            await batch.commit();
+                        }
+
+                        window.tampilkanNotif(`<b>SUKSES!</b> ${totalBerhasil} data usaha berhasil diunggah ke database.`, "success");
+                        document.getElementById('input-csv').value = ''; // Reset input
+                        
+                    } catch (error) {
+                        console.error("Error bulk upload:", error);
+                        window.tampilkanNotif("Terjadi kesalahan sistem saat mengirim data ke database.", "error");
+                        document.getElementById('input-csv').value = '';
+                    }
+                }
+            });
+        };
+
+        // ==========================================
+        // LOGIKA PENCARIAN (BACA DARI FIREBASE)
+        // ==========================================
+        window.cariUsaha = async function() {
+            const labelJumlah = document.getElementById('jumlah-hasil');
+            labelJumlah.innerText = "Mencari data ke database...";
+            document.getElementById('hasil-container').classList.remove('hidden');
+            document.getElementById('list-usaha').innerHTML = '<div class="text-center p-4 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl mb-2"></i><p>Memuat...</p></div>';
+
+            try {
+                let hasilPencarian = [];
+                const perusahaanRef = collection(db, NAMA_KOLEKSI);
+                
+                if (modePencarian === 'nib') {
+                    const nibVal = document.getElementById('input-nib').value.trim();
+                    if (!nibVal) {
+                        window.tampilkanNotif("Harap masukkan nomor NIB.", "error");
+                        return renderHasil([]);
+                    }
+                    
+                    const q = query(perusahaanRef, where("nib", "==", nibVal));
+                    const querySnapshot = await getDocs(q);
+                    
+                    querySnapshot.forEach((doc) => {
+                        hasilPencarian.push({ id: doc.id, ...doc.data() });
+                    });
+                } 
+                else {
+                    const namaVal = document.getElementById('input-nama').value.trim().toLowerCase();
+                    const alamatVal = document.getElementById('input-alamat').value.trim().toLowerCase();
+                    const provVal = document.getElementById('select-provinsi').value;
+                    const kabVal = document.getElementById('select-kabupaten').value;
+
+                    if (!provVal) {
+                        window.tampilkanNotif("Provinsi wajib dipilih jika mencari berdasarkan Nama/Alamat.", "error");
+                        return renderHasil([]);
+                    }
+                    if (!namaVal && !alamatVal) {
+                        window.tampilkanNotif("Harap masukkan setidaknya Nama Usaha atau Alamat.", "error");
+                        return renderHasil([]);
+                    }
+
+                    let q;
+                    if (kabVal) {
+                        q = query(perusahaanRef, where("provinsi", "==", provVal), where("kabupaten", "==", kabVal));
+                    } else {
+                        q = query(perusahaanRef, where("provinsi", "==", provVal));
+                    }
+
+                    const querySnapshot = await getDocs(q);
+                    let semuaDataWilayah = [];
+                    querySnapshot.forEach((doc) => {
+                        semuaDataWilayah.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    hasilPencarian = semuaDataWilayah.filter(u => {
+                        let cocok = true;
+                        if (namaVal && u.nama) {
+                            cocok = cocok && u.nama.toLowerCase().includes(namaVal);
+                        }
+                        if (alamatVal && u.alamat) {
+                            cocok = cocok && u.alamat.toLowerCase().includes(alamatVal);
+                        }
+                        return cocok;
+                    });
+                }
+
+                renderHasil(hasilPencarian);
+
+            } catch (error) {
+                console.error("Error mengambil data:", error);
+                window.tampilkanNotif("Gagal mengambil data. Pastikan konfigurasi Firebase sudah benar.", "error");
+                renderHasil([]);
+            }
+        };
 
         function renderHasil(hasil) {
             const container = document.getElementById('hasil-container');
@@ -331,7 +488,6 @@
                 const card = document.createElement('div');
                 card.className = "bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow";
                 
-                // Badge status email
                 let badgeEmail = '';
                 if (usaha.email_terverifikasi) {
                     badgeEmail = `<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-md font-medium"><i class="fas fa-check-circle"></i> Email Terverifikasi</span>`;
@@ -344,22 +500,22 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <h3 class="text-xl font-bold text-gray-800">${usaha.nama}</h3>
+                            <h3 class="text-xl font-bold text-gray-800">${usaha.nama || '-'}</h3>
                             <div class="flex items-center gap-3 mt-2 text-sm">
                                 <span class="bg-purple-100 text-purple-700 px-2.5 py-1 rounded-md font-semibold font-mono border border-purple-200">
-                                    NIB: ${usaha.nib}
+                                    NIB: ${usaha.nib || '-'}
                                 </span>
-                                <span class="text-gray-500"><i class="fas fa-map-marker-alt text-purple-400"></i> ${usaha.kabupaten}</span>
+                                <span class="text-gray-500"><i class="fas fa-map-marker-alt text-purple-400"></i> ${usaha.kabupaten || '-'}</span>
                             </div>
                         </div>
                         ${badgeEmail}
                     </div>
-                    <p class="text-gray-600 text-sm mb-4"><i class="fas fa-home text-gray-400 w-5"></i> ${usaha.alamat}</p>
+                    <p class="text-gray-600 text-sm mb-4"><i class="fas fa-home text-gray-400 w-5"></i> ${usaha.alamat || '-'}</p>
                     
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
                         <p class="text-sm font-medium text-gray-700 mb-2">Verifikasi Email Perusahaan:</p>
                         <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                            <input type="email" id="email-${usaha.id}" value="${usaha.email}" placeholder="Masukkan email aktif..." 
+                            <input type="email" id="email-${usaha.id}" value="${usaha.email || ''}" placeholder="Masukkan email aktif..." 
                                    class="flex-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none">
                             
                             <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 bg-white border border-gray-300 px-3 py-2.5 rounded-lg w-full sm:w-auto">
@@ -367,7 +523,7 @@
                                 Email ini sudah benar
                             </label>
                             
-                            <button onclick="simpanVerifikasi('${usaha.id}')" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm">
+                            <button id="btn-simpan-${usaha.id}" onclick="simpanVerifikasi('${usaha.id}')" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm">
                                 Simpan
                             </button>
                         </div>
@@ -378,39 +534,44 @@
         }
 
         // ==========================================
-        // LOGIKA SIMPAN & UPDATE
+        // LOGIKA SIMPAN & UPDATE (TULIS KE FIREBASE)
         // ==========================================
-        function simpanVerifikasi(id) {
+        window.simpanVerifikasi = async function(id) {
             const emailBaru = document.getElementById(`email-${id}`).value.trim();
             const dicentang = document.getElementById(`cek-${id}`).checked;
+            const tombolSimpan = document.getElementById(`btn-simpan-${id}`);
 
             if (!emailBaru) {
-                tampilkanNotif("Alamat email tidak boleh kosong!", "error");
+                window.tampilkanNotif("Alamat email tidak boleh kosong!", "error");
                 return;
             }
             if (!dicentang) {
-                tampilkanNotif("Harap ceklis kotak 'Email ini sudah benar' untuk memverifikasi.", "error");
+                window.tampilkanNotif("Harap ceklis kotak 'Email ini sudah benar' untuk memverifikasi.", "error");
                 return;
             }
 
-            // Simulasi update ke database
-            const index = dataUsaha.findIndex(u => u.id === id);
-            if (index !== -1) {
-                dataUsaha[index].email = emailBaru;
-                dataUsaha[index].email_terverifikasi = true;
-                
-                tampilkanNotif(`Data email untuk ${dataUsaha[index].nama} berhasil diverifikasi dan disimpan!`, "success");
-                
-                // Refresh tampilan dengan data terbaru
-                cariUsaha(); 
-            }
-            
-            // NANTI UNTUK FIREBASE:
-            // const docRef = doc(db, "perusahaan", id);
-            // await updateDoc(docRef, { email: emailBaru, email_terverifikasi: true });
-        }
+            const teksAwal = tombolSimpan.innerHTML;
+            tombolSimpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            tombolSimpan.disabled = true;
 
-        function simpanUsahaBaru() {
+            try {
+                const docRef = doc(db, NAMA_KOLEKSI, id);
+                await updateDoc(docRef, { 
+                    email: emailBaru, 
+                    email_terverifikasi: true 
+                });
+                
+                window.tampilkanNotif(`Data email berhasil diverifikasi dan disimpan!`, "success");
+                window.cariUsaha(); 
+            } catch (error) {
+                console.error("Error update data:", error);
+                window.tampilkanNotif("Gagal menyimpan data ke database.", "error");
+                tombolSimpan.innerHTML = teksAwal;
+                tombolSimpan.disabled = false;
+            }
+        };
+
+        window.simpanUsahaBaru = async function() {
             const nib = document.getElementById('tambah-nib').value.trim();
             const nama = document.getElementById('tambah-nama').value.trim();
             const kab = document.getElementById('tambah-kab').value;
@@ -422,32 +583,40 @@
                 return;
             }
 
-            // Simulasi tambah ke database
-            const usahaBaru = {
-                id: "id_" + Math.random().toString(36).substr(2, 9),
-                nib: nib,
-                nama: nama,
-                provinsi: "LAMPUNG",
-                kabupaten: kab,
-                alamat: alamat,
-                email: email,
-                email_terverifikasi: false
-            };
+            const tombolSimpanBtn = document.querySelector('#modal-tambah button.bg-purple-500');
+            const teksAwalBtn = tombolSimpanBtn.innerText;
+            tombolSimpanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            tombolSimpanBtn.disabled = true;
 
-            dataUsaha.push(usahaBaru);
-            
-            tutupModalTambah();
-            tampilkanNotif("Usaha baru berhasil ditambahkan! Anda bisa mencari datanya sekarang.", "success");
-            
-            // Kosongkan form
-            document.getElementById('tambah-nib').value = '';
-            document.getElementById('tambah-nama').value = '';
-            document.getElementById('tambah-alamat').value = '';
-            document.getElementById('tambah-email').value = '';
+            try {
+                const usahaBaru = {
+                    nib: nib,
+                    nama: nama,
+                    provinsi: "LAMPUNG",
+                    kabupaten: kab,
+                    alamat: alamat,
+                    email: email,
+                    email_terverifikasi: false,
+                    waktu_dibuat: new Date()
+                };
 
-            // NANTI UNTUK FIREBASE:
-            // await addDoc(collection(db, "perusahaan"), usahaBaru);
-        }
+                await addDoc(collection(db, NAMA_KOLEKSI), usahaBaru);
+                
+                window.tutupModalTambah();
+                window.tampilkanNotif("Usaha baru berhasil ditambahkan! Anda bisa mencari datanya sekarang.", "success");
+                
+                document.getElementById('tambah-nib').value = '';
+                document.getElementById('tambah-nama').value = '';
+                document.getElementById('tambah-alamat').value = '';
+                document.getElementById('tambah-email').value = '';
+            } catch (error) {
+                console.error("Error tambah data:", error);
+                window.tampilkanNotif("Gagal menambahkan usaha baru ke database.", "error");
+            } finally {
+                tombolSimpanBtn.innerHTML = teksAwalBtn;
+                tombolSimpanBtn.disabled = false;
+            }
+        };
     </script>
 </body>
 </html>
