@@ -3,620 +3,1768 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Direktori Usaha - Provinsi Lampung</title>
-    <!-- Tailwind CSS untuk Desain -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome untuk Ikon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- PapaParse untuk Membaca file CSV -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <title>Verifikasi Email Usaha — Sensus Ekonomi 2026</title>
+
+    <!-- Fonts: Cormorant Garamond (display formal) + IBM Plex Sans (body institutional) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- SheetJS untuk baca & generate Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .tab-active { background-color: #8b5cf6; color: white; border-color: #8b5cf6; }
-        .tab-inactive { background-color: #f3f4f6; color: #4b5563; border-color: #e5e7eb; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #8b5cf6; }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+        /* ============================================
+           DESIGN TOKENS — SE2026 Orange-White Theme
+        ============================================ */
+        :root {
+            --orange-50:  #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-200: #fed7aa;
+            --orange-400: #fb923c;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            --orange-700: #c2410c;
+            --orange-800: #9a3412;
+            --slate-50:   #f8fafc;
+            --slate-100:  #f1f5f9;
+            --slate-200:  #e2e8f0;
+            --slate-300:  #cbd5e1;
+            --slate-400:  #94a3b8;
+            --slate-500:  #64748b;
+            --slate-600:  #475569;
+            --slate-700:  #334155;
+            --slate-800:  #1e293b;
+            --slate-900:  #0f172a;
+            --white:      #ffffff;
+            --success:    #16a34a;
+            --error:      #dc2626;
 
-    <!-- Container Utama -->
-    <div class="max-w-5xl mx-auto space-y-6">
-        
-        <!-- Header / Banner -->
-        <div class="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-6 md:p-10 text-white shadow-lg relative overflow-hidden">
-            <div class="relative z-10">
-                <div class="flex items-center space-x-3 mb-2">
-                    <div class="bg-white/20 p-3 rounded-lg backdrop-blur-sm">
-                        <i class="fas fa-search text-xl"></i>
-                    </div>
-                    <h1 class="text-3xl font-bold">Cari & Verifikasi Usaha</h1>
-                </div>
-                <p class="text-purple-100 text-sm md:text-base mt-2">
-                    Temukan data usaha Anda berdasarkan NIB atau Nama Usaha untuk memverifikasi alamat email perusahaan (Khusus Provinsi Lampung).
-                </p>
-            </div>
-            <!-- Dekorasi background -->
-            <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-20 -mt-20"></div>
-            <div class="absolute right-20 bottom-0 w-40 h-40 bg-white opacity-10 rounded-full -mb-10"></div>
-        </div>
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body:    'IBM Plex Sans', 'Segoe UI', sans-serif;
 
-        <!-- Kotak Pencarian -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <!-- Tabs -->
-            <div class="flex space-x-3 mb-6">
-                <button id="tab-nib" onclick="switchTab('nib')" class="tab-active px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2">
-                    <i class="fas fa-id-card"></i> Berdasarkan NIB
-                </button>
-                <button id="tab-nama" onclick="switchTab('nama')" class="tab-inactive px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2">
-                    <i class="fas fa-building"></i> Nama / Alamat
-                </button>
-            </div>
+            --tracking-wide:  0.06em;
+            --tracking-wider: 0.12em;
+            --tracking-tight: -0.015em;
 
-            <!-- Form Pencarian NIB -->
-            <div id="form-nib" class="block space-y-4">
-                <div class="relative">
-                    <i class="fas fa-hashtag absolute left-4 top-3.5 text-gray-400"></i>
-                    <input type="text" id="input-nib" placeholder="Masukkan Nomor Induk Berusaha (NIB)..." 
-                           class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all">
-                </div>
-            </div>
+            --radius-sm:  4px;
+            --radius-md:  10px;
+            --radius-lg:  16px;
+            --radius-xl:  22px;
 
-            <!-- Form Pencarian Nama/Alamat -->
-            <div id="form-nama" class="hidden space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="relative">
-                        <i class="fas fa-store absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" id="input-nama" placeholder="Masukkan Nama Usaha..." 
-                               class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all">
-                    </div>
-                    <div class="relative">
-                        <i class="fas fa-map-marker-alt absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" id="input-alamat" placeholder="Alamat (opsional)..." 
-                               class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="relative">
-                        <select id="select-provinsi" class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all appearance-none cursor-pointer">
-                            <option value="">-- Pilih Provinsi (Wajib) --</option>
-                            <option value="LAMPUNG">LAMPUNG</option>
-                        </select>
-                        <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
-                    </div>
-                    <div class="relative">
-                        <select id="select-kabupaten" class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all appearance-none cursor-pointer">
-                            <option value="">-- Pilih Kabupaten/Kota (Opsional) --</option>
-                            <option value="Bandar Lampung">Bandar Lampung</option>
-                            <option value="Metro">Metro</option>
-                            <option value="Pesawaran">Pesawaran</option>
-                            <option value="Lampung Selatan">Lampung Selatan</option>
-                            <option value="Lampung Tengah">Lampung Tengah</option>
-                            <option value="Lampung Utara">Lampung Utara</option>
-                            <option value="Lampung Barat">Lampung Barat</option>
-                            <option value="Lampung Timur">Lampung Timur</option>
-                            <option value="Tulang Bawang">Tulang Bawang</option>
-                            <option value="Tulang Bawang Barat">Tulang Bawang Barat</option>
-                            <option value="Mesuji">Mesuji</option>
-                            <option value="Tanggamus">Tanggamus</option>
-                            <option value="Pesisir Barat">Pesisir Barat</option>
-                            <option value="Way Kanan">Way Kanan</option>
-                            <option value="Pringsewu">Pringsewu</option>
-                        </select>
-                        <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
-                    </div>
-                </div>
-                <div class="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm flex items-start gap-2">
-                    <i class="fas fa-info-circle mt-0.5"></i>
-                    <p>Pencarian nama/alamat <strong>wajib memilih Provinsi</strong> terlebih dahulu.</p>
-                </div>
-            </div>
-
-            <!-- Tombol Cari & Tambah & Upload Bulk -->
-            <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-t pt-6">
-                <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center">
-                    <button onclick="bukaModalTambah()" class="text-purple-600 font-medium hover:text-purple-800 transition-colors flex items-center gap-2">
-                        <i class="fas fa-plus-circle"></i> Tambah Baru
-                    </button>
-                    <span class="hidden sm:inline text-gray-300">|</span>
-                    
-                    <!-- Form Hidden untuk File CSV -->
-                    <input type="file" id="input-csv" accept=".csv" class="hidden" onchange="prosesUploadCSV(event)">
-                    <button onclick="document.getElementById('input-csv').click()" class="text-green-600 font-medium hover:text-green-800 transition-colors flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200">
-                        <i class="fas fa-file-csv"></i> Upload Data CSV
-                    </button>
-                </div>
-
-                <button onclick="cariUsaha()" class="w-full sm:w-auto bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-xl font-medium transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-                    <i class="fas fa-search"></i> Cari Data
-                </button>
-            </div>
-        </div>
-
-        <!-- Notifikasi (Custom Alert) -->
-        <div id="notifikasi" class="hidden p-4 rounded-xl shadow-sm text-sm font-medium transition-all transform translate-y-0 opacity-100 flex items-start gap-3">
-            <i id="notif-icon" class="fas fa-info-circle mt-0.5 text-lg"></i>
-            <span id="notif-pesan"></span>
-        </div>
-
-        <!-- Hasil Pencarian -->
-        <div id="hasil-container" class="hidden space-y-4">
-            <div class="flex items-center justify-between bg-purple-50 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium w-max">
-                <i class="fas fa-list-ul mr-2"></i> <span id="jumlah-hasil">Menampilkan 0 hasil</span>
-            </div>
-
-            <div id="list-usaha" class="space-y-4">
-                <!-- Data akan di-render di sini oleh JavaScript -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Tambah Usaha -->
-    <div id="modal-tambah" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl transform transition-all">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                <h2 class="text-xl font-bold text-gray-800">Tambah Usaha Baru</h2>
-                <button onclick="tutupModalTambah()" class="text-gray-400 hover:text-red-500 text-xl transition-colors"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Induk Berusaha (NIB) *</label>
-                    <input type="text" id="tambah-nib" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Usaha *</label>
-                    <input type="text" id="tambah-nama" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi *</label>
-                    <input type="text" value="LAMPUNG" readonly class="w-full p-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-500 cursor-not-allowed">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota *</label>
-                    <select id="tambah-kab" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
-                        <option value="Bandar Lampung">Bandar Lampung</option>
-                        <option value="Metro">Metro</option>
-                        <option value="Pesawaran">Pesawaran</option>
-                        <option value="Lampung Selatan">Lampung Selatan</option>
-                        <option value="Lampung Tengah">Lampung Tengah</option>
-                        <option value="Lampung Utara">Lampung Utara</option>
-                        <option value="Lampung Barat">Lampung Barat</option>
-                        <option value="Lampung Timur">Lampung Timur</option>
-                        <option value="Tulang Bawang">Tulang Bawang</option>
-                        <option value="Tulang Bawang Barat">Tulang Bawang Barat</option>
-                        <option value="Mesuji">Mesuji</option>
-                        <option value="Tanggamus">Tanggamus</option>
-                        <option value="Pesisir Barat">Pesisir Barat</option>
-                        <option value="Way Kanan">Way Kanan</option>
-                        <option value="Pringsewu">Pringsewu</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap *</label>
-                    <textarea id="tambah-alamat" rows="2" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Email *</label>
-                    <input type="email" id="tambah-email" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
-                </div>
-            </div>
-            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
-                <button onclick="tutupModalTambah()" class="px-5 py-2.5 rounded-xl text-gray-600 font-medium hover:bg-gray-200 transition-colors">Batal</button>
-                <button onclick="simpanUsahaBaru()" class="px-5 py-2.5 rounded-xl bg-purple-500 text-white font-medium hover:bg-purple-600 transition-colors">Simpan Data</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT FIREBASE & LOGIKA UTAMA -->
-    <script type="module">
-        // 1. Import fungsi-fungsi Firebase yang dibutuhkan (menambahkan writeBatch)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            getDocs, 
-            addDoc, 
-            doc, 
-            updateDoc, 
-            query, 
-            where,
-            writeBatch
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // 2. PASTE FIREBASE CONFIG ANDA DI SINI
-        const firebaseConfig = {
-            apiKey: "AIzaSyDT3VUNM6LZYZItOtuyItqXYVvG6J8fx-s",
-            authDomain: "se2026-f3003.firebaseapp.com",
-            projectId: "se2026-f3003",
-            storageBucket: "se2026-f3003.firebasestorage.app",
-            messagingSenderId: "80341327498",
-            appId: "1:80341327498:web:0cf9a854246eb784be5773"
-        };
-
-        // Inisialisasi Firebase & Database
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Nama koleksi (tabel) di database Anda
-        const NAMA_KOLEKSI = "perusahaan";
-
-        // ==========================================
-        // LOGIKA TAMPILAN (TAB & MODAL)
-        // ==========================================
-        let modePencarian = 'nib'; 
-
-        window.switchTab = function(tab) {
-            modePencarian = tab;
-            const tabNib = document.getElementById('tab-nib');
-            const tabNama = document.getElementById('tab-nama');
-            const formNib = document.getElementById('form-nib');
-            const formNama = document.getElementById('form-nama');
-
-            if (tab === 'nib') {
-                tabNib.className = "tab-active px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2";
-                tabNama.className = "tab-inactive px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2";
-                formNib.classList.remove('hidden');
-                formNama.classList.add('hidden');
-            } else {
-                tabNama.className = "tab-active px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2";
-                tabNib.className = "tab-inactive px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2";
-                formNama.classList.remove('hidden');
-                formNib.classList.add('hidden');
-            }
-        };
-
-        window.bukaModalTambah = function() {
-            document.getElementById('modal-tambah').classList.remove('hidden');
-            document.getElementById('modal-tambah').classList.add('flex');
-        };
-
-        window.tutupModalTambah = function() {
-            document.getElementById('modal-tambah').classList.add('hidden');
-            document.getElementById('modal-tambah').classList.remove('flex');
-        };
-
-        window.tampilkanNotif = function(pesan, tipe = 'info', tahanLama = false) {
-            const notif = document.getElementById('notifikasi');
-            const ikon = document.getElementById('notif-icon');
-            const teks = document.getElementById('notif-pesan');
-            
-            notif.classList.remove('hidden', 'bg-blue-50', 'text-blue-700', 'bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700', 'bg-yellow-50', 'text-yellow-700');
-            
-            if (tipe === 'error') {
-                notif.classList.add('bg-red-50', 'text-red-700');
-                ikon.className = 'fas fa-exclamation-triangle mt-0.5 text-lg';
-            } else if (tipe === 'success') {
-                notif.classList.add('bg-green-50', 'text-green-700');
-                ikon.className = 'fas fa-check-circle mt-0.5 text-lg';
-            } else if (tipe === 'warning') {
-                notif.classList.add('bg-yellow-50', 'text-yellow-700');
-                ikon.className = 'fas fa-spinner fa-spin mt-0.5 text-lg';
-            } else {
-                notif.classList.add('bg-blue-50', 'text-blue-700');
-                ikon.className = 'fas fa-info-circle mt-0.5 text-lg';
-            }
-
-            teks.innerHTML = pesan;
-            
-            if (!tahanLama) {
-                setTimeout(() => notif.classList.add('hidden'), 6000);
-            }
-        };
-
-        // ==========================================
-        // LOGIKA BULK UPLOAD DARI CSV (PAPAPARSE)
-        // ==========================================
-        window.prosesUploadCSV = function(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-
-            window.tampilkanNotif("Sedang membaca file CSV... Mohon tunggu.", "warning", true);
-
-            // Gunakan PapaParse untuk membaca format CSV yang rumit (ada koma di dalam teks)
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                complete: async function(results) {
-                    const data = results.data;
-                    if(data.length === 0) {
-                        window.tampilkanNotif("File CSV kosong atau format salah.", "error");
-                        document.getElementById('input-csv').value = '';
-                        return;
-                    }
-
-                    window.tampilkanNotif(`Mulai mengirim ${data.length} data ke database... <b>JANGAN TUTUP HALAMAN INI</b>.`, "warning", true);
-
-                    try {
-                        let batch = writeBatch(db);
-                        let hitungBatch = 0;
-                        let totalBerhasil = 0;
-
-                        // Looping semua baris di file CSV
-                        for (const baris of data) {
-                            // Mencocokkan nama kolom yang ada di file Excel/CSV Anda
-                            const namaUsaha = baris['Nama Usaha'] || baris['Nama Komersil'] || '';
-                            const nib = baris['NIB'] || '';
-                            const prov = (baris['prov'] || 'LAMPUNG').toUpperCase();
-                            const kab = baris['kabkot'] || '';
-                            const alamat = baris['Alamat'] || '';
-
-                            // Lewati jika datanya benar-benar kosong
-                            if (!namaUsaha && !nib) continue;
-
-                            const docRef = doc(collection(db, NAMA_KOLEKSI));
-                            batch.set(docRef, {
-                                nib: nib,
-                                nama: namaUsaha,
-                                provinsi: prov,
-                                kabupaten: kab,
-                                alamat: alamat,
-                                email: "",
-                                email_terverifikasi: false,
-                                waktu_dibuat: new Date()
-                            });
-
-                            hitungBatch++;
-                            totalBerhasil++;
-
-                            // Firestore membatasi maksimal 500 penulisan dalam 1 batch
-                            if (hitungBatch === 490) {
-                                await batch.commit(); // Kirim batch ke server
-                                batch = writeBatch(db); // Buat antrian batch baru
-                                hitungBatch = 0;
-                            }
-                        }
-
-                        // Kirim sisa data yang kurang dari 500
-                        if (hitungBatch > 0) {
-                            await batch.commit();
-                        }
-
-                        window.tampilkanNotif(`<b>SUKSES!</b> ${totalBerhasil} data usaha berhasil diunggah ke database.`, "success");
-                        document.getElementById('input-csv').value = ''; // Reset input
-                        
-                    } catch (error) {
-                        console.error("Error bulk upload:", error);
-                        window.tampilkanNotif("Terjadi kesalahan sistem saat mengirim data ke database.", "error");
-                        document.getElementById('input-csv').value = '';
-                    }
-                }
-            });
-        };
-
-        // ==========================================
-        // LOGIKA PENCARIAN (BACA DARI FIREBASE)
-        // ==========================================
-        window.cariUsaha = async function() {
-            const labelJumlah = document.getElementById('jumlah-hasil');
-            labelJumlah.innerText = "Mencari data ke database...";
-            document.getElementById('hasil-container').classList.remove('hidden');
-            document.getElementById('list-usaha').innerHTML = '<div class="text-center p-4 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl mb-2"></i><p>Memuat...</p></div>';
-
-            try {
-                let hasilPencarian = [];
-                const perusahaanRef = collection(db, NAMA_KOLEKSI);
-                
-                if (modePencarian === 'nib') {
-                    const nibVal = document.getElementById('input-nib').value.trim();
-                    if (!nibVal) {
-                        window.tampilkanNotif("Harap masukkan nomor NIB.", "error");
-                        return renderHasil([]);
-                    }
-                    
-                    const q = query(perusahaanRef, where("nib", "==", nibVal));
-                    const querySnapshot = await getDocs(q);
-                    
-                    querySnapshot.forEach((doc) => {
-                        hasilPencarian.push({ id: doc.id, ...doc.data() });
-                    });
-                } 
-                else {
-                    const namaVal = document.getElementById('input-nama').value.trim().toLowerCase();
-                    const alamatVal = document.getElementById('input-alamat').value.trim().toLowerCase();
-                    const provVal = document.getElementById('select-provinsi').value;
-                    const kabVal = document.getElementById('select-kabupaten').value;
-
-                    if (!provVal) {
-                        window.tampilkanNotif("Provinsi wajib dipilih jika mencari berdasarkan Nama/Alamat.", "error");
-                        return renderHasil([]);
-                    }
-                    if (!namaVal && !alamatVal) {
-                        window.tampilkanNotif("Harap masukkan setidaknya Nama Usaha atau Alamat.", "error");
-                        return renderHasil([]);
-                    }
-
-                    let q;
-                    if (kabVal) {
-                        q = query(perusahaanRef, where("provinsi", "==", provVal), where("kabupaten", "==", kabVal));
-                    } else {
-                        q = query(perusahaanRef, where("provinsi", "==", provVal));
-                    }
-
-                    const querySnapshot = await getDocs(q);
-                    let semuaDataWilayah = [];
-                    querySnapshot.forEach((doc) => {
-                        semuaDataWilayah.push({ id: doc.id, ...doc.data() });
-                    });
-
-                    hasilPencarian = semuaDataWilayah.filter(u => {
-                        let cocok = true;
-                        if (namaVal && u.nama) {
-                            cocok = cocok && u.nama.toLowerCase().includes(namaVal);
-                        }
-                        if (alamatVal && u.alamat) {
-                            cocok = cocok && u.alamat.toLowerCase().includes(alamatVal);
-                        }
-                        return cocok;
-                    });
-                }
-
-                renderHasil(hasilPencarian);
-
-            } catch (error) {
-                console.error("Error mengambil data:", error);
-                window.tampilkanNotif("Gagal mengambil data. Pastikan konfigurasi Firebase sudah benar.", "error");
-                renderHasil([]);
-            }
-        };
-
-        function renderHasil(hasil) {
-            const container = document.getElementById('hasil-container');
-            const list = document.getElementById('list-usaha');
-            const labelJumlah = document.getElementById('jumlah-hasil');
-
-            list.innerHTML = '';
-            container.classList.remove('hidden');
-
-            if (hasil.length === 0) {
-                labelJumlah.innerText = "Tidak ada hasil ditemukan";
-                list.innerHTML = `
-                    <div class="bg-white p-8 text-center rounded-xl border border-gray-100 shadow-sm text-gray-500">
-                        <i class="fas fa-search-minus text-4xl mb-3 text-gray-300"></i>
-                        <p>Data usaha tidak ditemukan. Silakan cek kembali kata kunci atau gunakan tombol 'Tambah Baru'.</p>
-                    </div>`;
-                return;
-            }
-
-            labelJumlah.innerText = `Menampilkan ${hasil.length} hasil`;
-
-            hasil.forEach(usaha => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow";
-                
-                let badgeEmail = '';
-                if (usaha.email_terverifikasi) {
-                    badgeEmail = `<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-md font-medium"><i class="fas fa-check-circle"></i> Email Terverifikasi</span>`;
-                } else if (!usaha.email) {
-                    badgeEmail = `<span class="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-md font-medium"><i class="fas fa-exclamation-circle"></i> Email Kosong</span>`;
-                } else {
-                    badgeEmail = `<span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-md font-medium"><i class="fas fa-clock"></i> Belum Diverifikasi</span>`;
-                }
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-800">${usaha.nama || '-'}</h3>
-                            <div class="flex items-center gap-3 mt-2 text-sm">
-                                <span class="bg-purple-100 text-purple-700 px-2.5 py-1 rounded-md font-semibold font-mono border border-purple-200">
-                                    NIB: ${usaha.nib || '-'}
-                                </span>
-                                <span class="text-gray-500"><i class="fas fa-map-marker-alt text-purple-400"></i> ${usaha.kabupaten || '-'}</span>
-                            </div>
-                        </div>
-                        ${badgeEmail}
-                    </div>
-                    <p class="text-gray-600 text-sm mb-4"><i class="fas fa-home text-gray-400 w-5"></i> ${usaha.alamat || '-'}</p>
-                    
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Verifikasi Email Perusahaan:</p>
-                        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                            <input type="email" id="email-${usaha.id}" value="${usaha.email || ''}" placeholder="Masukkan email aktif..." 
-                                   class="flex-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none">
-                            
-                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 bg-white border border-gray-300 px-3 py-2.5 rounded-lg w-full sm:w-auto">
-                                <input type="checkbox" id="cek-${usaha.id}" class="w-4 h-4 text-purple-600 rounded" ${usaha.email_terverifikasi ? 'checked' : ''}>
-                                Email ini sudah benar
-                            </label>
-                            
-                            <button id="btn-simpan-${usaha.id}" onclick="simpanVerifikasi('${usaha.id}')" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm">
-                                Simpan
-                            </button>
-                        </div>
-                    </div>
-                `;
-                list.appendChild(card);
-            });
+            --shadow-sm:  0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+            --shadow-md:  0 4px 16px rgba(0,0,0,.08);
+            --shadow-lg:  0 12px 40px rgba(0,0,0,.12);
+            --shadow-orange: 0 8px 32px rgba(249,115,22,.25);
         }
 
-        // ==========================================
-        // LOGIKA SIMPAN & UPDATE (TULIS KE FIREBASE)
-        // ==========================================
-        window.simpanVerifikasi = async function(id) {
-            const emailBaru = document.getElementById(`email-${id}`).value.trim();
-            const dicentang = document.getElementById(`cek-${id}`).checked;
-            const tombolSimpan = document.getElementById(`btn-simpan-${id}`);
+        /* ============================================
+           RESET & BASE
+        ============================================ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-            if (!emailBaru) {
-                window.tampilkanNotif("Alamat email tidak boleh kosong!", "error");
-                return;
-            }
-            if (!dicentang) {
-                window.tampilkanNotif("Harap ceklis kotak 'Email ini sudah benar' untuk memverifikasi.", "error");
-                return;
-            }
+        body {
+            font-family: var(--font-body);
+            font-size: 14.5px;
+            font-weight: 400;
+            line-height: 1.65;
+            background: var(--slate-50);
+            color: var(--slate-800);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-            const teksAwal = tombolSimpan.innerHTML;
-            tombolSimpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-            tombolSimpan.disabled = true;
+        /* ============================================
+           BACKGROUND — Subtle geometric pattern
+        ============================================ */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 15% 10%, rgba(249,115,22,.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(249,115,22,.04) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-            try {
-                const docRef = doc(db, NAMA_KOLEKSI, id);
-                await updateDoc(docRef, { 
-                    email: emailBaru, 
-                    email_terverifikasi: true 
+        /* Geometric dots pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(249,115,22,.08) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+
+        /* ============================================
+           HEADER
+        ============================================ */
+        .header {
+            background: linear-gradient(135deg, var(--orange-600) 0%, var(--orange-500) 50%, var(--orange-400) 100%);
+            border-radius: var(--radius-xl);
+            padding: 36px 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-orange);
+        }
+
+        /* Decorative rings */
+        .header::before {
+            content: '';
+            position: absolute;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            border: 60px solid rgba(255,255,255,.07);
+            right: -120px;
+            top: -100px;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 40px solid rgba(255,255,255,.06);
+            right: 80px;
+            bottom: -80px;
+        }
+
+        .header-inner { position: relative; z-index: 1; }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,.28);
+            border-radius: 3px;
+            padding: 6px 16px;
+            font-family: var(--font-body);
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .header-badge i { font-size: 10px; }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: clamp(26px, 4.5vw, 38px);
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1.12;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 0.01em;
+            opacity: .9;
+            line-height: 1.7;
+            max-width: 520px;
+        }
+
+        /* Stats bar */
+        .header-stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,.2);
+            flex-wrap: wrap;
+        }
+        .stat-item { display: flex; flex-direction: column; gap: 3px; }
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 10.5px;
+            font-weight: 500;
+            opacity: .72;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* ============================================
+           INFO STRIP — Cara kerja app
+        ============================================ */
+        .info-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .info-card {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-shadow: var(--shadow-sm);
+        }
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            background: var(--orange-100);
+            color: var(--orange-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .info-card h4 {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: var(--slate-700);
+            margin-bottom: 4px;
+        }
+        .info-card p  {
+            font-size: 12px;
+            font-weight: 300;
+            color: var(--slate-500);
+            line-height: 1.55;
+        }
+
+        /* ============================================
+           SEARCH CARD
+        ============================================ */
+        .search-card {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-label {
+            font-family: var(--font-body);
+            font-size: 10.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.13em;
+            color: var(--orange-600);
+            margin-bottom: 18px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: var(--slate-100);
+            padding: 4px;
+            border-radius: var(--radius-md);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            transition: all .2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--slate-500);
+            background: transparent;
+        }
+        .tab-btn.active {
+            background: var(--white);
+            color: var(--orange-600);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+        .tab-btn:hover:not(.active) { color: var(--slate-700); }
+
+        /* Input Group */
+        .input-group { position: relative; margin-bottom: 12px; }
+        .input-group .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate-400);
+            font-size: 14px;
+            pointer-events: none;
+        }
+        .form-input {
+            width: 100%;
+            padding: 11px 16px 11px 42px;
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            transition: all .2s ease;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: var(--orange-400);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(249,115,22,.08);
+        }
+        .form-input::placeholder { color: var(--slate-400); font-weight: 300; font-style: italic; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Kabupaten select */
+        .select-wrap { position: relative; }
+        .select-wrap .input-icon { z-index: 1; }
+        .select-wrap .chevron {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate-400);
+            font-size: 12px;
+            pointer-events: none;
+        }
+        .form-select {
+            width: 100%;
+            padding: 11px 40px 11px 42px;
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            transition: all .2s ease;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+        }
+        .form-select:focus {
+            border-color: var(--orange-400);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(249,115,22,.08);
+        }
+
+        /* Search footer */
+        .search-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid var(--slate-100);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            border: none;
+            transition: all .2s ease;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: var(--orange-500);
+            color: white;
+            box-shadow: 0 4px 12px rgba(249,115,22,.3);
+        }
+        .btn-primary:hover { background: var(--orange-600); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(249,115,22,.35); }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--slate-600);
+            border: 1.5px solid var(--slate-200);
+        }
+        .btn-secondary:hover { border-color: var(--orange-300); color: var(--orange-600); background: var(--orange-50); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--slate-500);
+            padding: 11px 14px;
+        }
+        .btn-ghost:hover { color: var(--orange-600); background: var(--orange-50); }
+
+        .btn-success {
+            background: #dcfce7;
+            color: var(--success);
+            border: 1.5px solid #bbf7d0;
+        }
+        .btn-success:hover { background: #bbf7d0; }
+
+        /* Divider */
+        .btn-divider { width: 1px; height: 28px; background: var(--slate-200); }
+
+        /* ============================================
+           TOAST / NOTIFICATION
+        ============================================ */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 13px 18px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            line-height: 1.55;
+            box-shadow: var(--shadow-lg);
+            min-width: 280px;
+            max-width: 380px;
+            animation: toastIn .3s ease;
+            pointer-events: all;
+        }
+        .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .toast.info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .toast.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .toast.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .toast.warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(0); }
+            to   { opacity: 0; transform: translateX(20px); }
+        }
+
+        /* ============================================
+           RESULTS
+        ============================================ */
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .results-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--orange-100);
+            color: var(--orange-700);
+            padding: 5px 14px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        /* Result Card */
+        .result-card {
+            background: var(--white);
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: all .2s ease;
+            animation: cardIn .3s ease both;
+        }
+        .result-card:hover {
+            border-color: var(--orange-300);
+            box-shadow: 0 4px 20px rgba(249,115,22,.12);
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .card-left { flex: 1; min-width: 0; }
+
+        .card-name {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--slate-900);
+            margin-bottom: 4px;
+            line-height: 1.25;
+        }
+        .card-komersil {
+            font-size: 12.5px;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--slate-500);
+            margin-bottom: 10px;
+            letter-spacing: 0.01em;
+        }
+
+        .card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 10.5px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .badge-orange { background: var(--orange-100); color: var(--orange-700); }
+        .badge-slate  { background: var(--slate-100); color: var(--slate-600); }
+        .badge-green  { background: #dcfce7; color: #166534; }
+        .badge-yellow { background: #fef9c3; color: #854d0e; }
+
+        .card-divider { border: none; border-top: 1px solid var(--slate-100); margin: 12px 0; }
+
+        .card-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .meta-item { display: flex; flex-direction: column; gap: 2px; }
+        .meta-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--slate-400);
+        }
+        .meta-value {
+            font-size: 13.5px;
+            font-weight: 400;
+            color: var(--slate-700);
+            line-height: 1.45;
+        }
+
+        /* Email section in card */
+        .email-section {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            border: 1.5px dashed var(--slate-200);
+            background: var(--slate-50);
+        }
+        .email-section.has-email {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+        }
+        .email-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--slate-400);
+            margin-bottom: 6px;
+        }
+        .email-value {
+            font-family: var(--font-body);
+            font-size: 14.5px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            color: var(--success);
+        }
+        .email-missing {
+            font-size: 13px;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--slate-400);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+        .btn-sm {
+            padding: 7px 14px;
+            font-size: 12px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Inline email edit */
+        .email-edit-form {
+            display: none;
+            margin-top: 10px;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .email-edit-form.show { display: flex; }
+        .email-edit-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 14px;
+            border: 1.5px solid var(--orange-300);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            outline: none;
+            background: white;
+        }
+        .email-edit-input:focus { border-color: var(--orange-500); box-shadow: 0 0 0 3px rgba(249,115,22,.1); }
+
+        /* ============================================
+           EMPTY / LOADING STATES
+        ============================================ */
+        .state-box {
+            background: var(--white);
+            border: 1.5px dashed var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 48px 24px;
+            text-align: center;
+        }
+        .state-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--orange-100);
+            color: var(--orange-500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+        .state-box h3 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--slate-700);
+            margin-bottom: 8px;
+        }
+        .state-box p  {
+            font-size: 13.5px;
+            font-weight: 300;
+            color: var(--slate-500);
+            line-height: 1.65;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--orange-100);
+            border-top-color: var(--orange-500);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            color: var(--slate-600);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page-btn:hover:not(:disabled) { border-color: var(--orange-400); color: var(--orange-600); }
+        .page-btn.active { background: var(--orange-500); color: white; border-color: var(--orange-500); }
+        .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+        /* ============================================
+           MODAL
+        ============================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 520px;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn .25s ease;
+            overflow: hidden;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(.96) translateY(10px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid var(--slate-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--slate-900);
+        }
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: var(--slate-100);
+            color: var(--slate-500);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all .2s;
+        }
+        .modal-close:hover { background: #fee2e2; color: var(--error); }
+
+        .modal-body { padding: 24px 28px; }
+        .modal-footer {
+            padding: 16px 28px 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--slate-500);
+            margin-bottom: 7px;
+        }
+        .form-field { margin-bottom: 16px; }
+        .form-readonly {
+            padding: 10px 14px;
+            background: var(--slate-100);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--slate-500);
+            border: 1.5px solid var(--slate-200);
+        }
+
+        .modal-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--slate-100);
+            margin-bottom: 24px;
+        }
+        .modal-tab {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            font-family: var(--font-body);
+            font-size: 12.5px;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            color: var(--slate-400);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .modal-tab.active { color: var(--orange-600); border-bottom-color: var(--orange-500); font-weight: 600; }
+        .modal-tab:hover:not(.active) { color: var(--slate-600); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Excel upload area */
+        .upload-area {
+            border: 2px dashed var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .upload-area:hover, .upload-area.drag-over {
+            border-color: var(--orange-400);
+            background: var(--orange-50);
+        }
+        .upload-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            background: var(--orange-100);
+            color: var(--orange-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin: 0 auto 12px;
+        }
+        .upload-area h4 {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--slate-700);
+            margin-bottom: 6px;
+        }
+        .upload-area p  {
+            font-size: 12.5px;
+            font-weight: 300;
+            color: var(--slate-400);
+            line-height: 1.55;
+        }
+        .upload-hint {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--orange-600);
+            margin-top: 8px;
+            letter-spacing: 0.01em;
+        }
+
+        .progress-bar-wrap {
+            display: none;
+            margin-top: 16px;
+        }
+        .progress-bar-wrap.show { display: block; }
+        .progress-label {
+            font-size: 11.5px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            color: var(--slate-600);
+            margin-bottom: 7px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .progress-track { height: 8px; background: var(--slate-100); border-radius: 999px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange-500), var(--orange-400)); border-radius: 999px; transition: width .3s ease; }
+
+        /* Template note */
+        .template-note {
+            background: var(--orange-50);
+            border: 1px solid var(--orange-200);
+            border-radius: var(--radius-md);
+            padding: 13px 16px;
+            font-size: 12.5px;
+            font-weight: 400;
+            line-height: 1.7;
+            color: var(--orange-800);
+            margin-top: 14px;
+        }
+        .template-note strong { font-weight: 600; letter-spacing: 0.01em; }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 640px) {
+            .app-wrapper { padding: 16px 14px 40px; }
+            .header { padding: 24px 22px; }
+            .header-stats { gap: 16px; }
+            .stat-value { font-size: 18px; }
+            .info-strip { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .search-footer { flex-direction: column; align-items: stretch; }
+            .btn-group { justify-content: center; }
+            .btn-primary { width: 100%; justify-content: center; }
+            .card-meta { grid-template-columns: 1fr 1fr; }
+            .modal-body { padding: 20px; }
+            .modal-footer { padding: 14px 20px 20px; flex-direction: column-reverse; }
+            .modal-footer .btn { width: 100%; justify-content: center; }
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        hr.divider { border: none; border-top: 1px solid var(--slate-100); margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<div class="app-wrapper">
+
+    <!-- ======================== HEADER ======================== -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-badge">
+                <i class="fas fa-chart-bar"></i>
+                BPS Provinsi Lampung
+            </div>
+            <h1>Verifikasi Email Direktori Usaha<br>Sensus Ekonomi 2026</h1>
+            <p>Temukan data usaha Anda berdasarkan NIB atau Nama Usaha, lalu lengkapi alamat email untuk keperluan pendataan SE2026.</p>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-total">—</span>
+                    <span class="stat-label">Total Usaha</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-beremail">—</span>
+                    <span class="stat-label">Sudah Ber-email</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-kosong">—</span>
+                    <span class="stat-label">Belum Ber-email</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ======================== INFO STRIP ======================== -->
+    <div class="info-strip">
+        <div class="info-card">
+            <div class="info-icon"><i class="fas fa-search"></i></div>
+            <div>
+                <h4>1. Cari Usaha Anda</h4>
+                <p>Ketik NIB atau Nama Usaha di kolom pencarian</p>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon"><i class="fas fa-envelope"></i></div>
+            <div>
+                <h4>2. Isi Alamat Email</h4>
+                <p>Klik "Isi Email" pada kartu usaha Anda dan masukkan email aktif</p>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <h4>3. Data Tersimpan</h4>
+                <p>Email langsung tersimpan ke database SE2026 Provinsi Lampung</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== SEARCH CARD ======================== -->
+    <div class="search-card">
+        <div class="section-label"><i class="fas fa-magnifying-glass" style="margin-right:6px"></i>Pencarian Data Usaha</div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-nib" onclick="switchTab('nib')">
+                <i class="fas fa-id-card"></i> Berdasarkan NIB
+            </button>
+            <button class="tab-btn" id="tab-nama" onclick="switchTab('nama')">
+                <i class="fas fa-building"></i> Berdasarkan Nama / Alamat
+            </button>
+        </div>
+
+        <!-- Form NIB -->
+        <div id="form-nib">
+            <div class="input-group">
+                <i class="fas fa-hashtag input-icon"></i>
+                <input type="text" id="input-nib" class="form-input"
+                    placeholder="Masukkan Nomor Induk Berusaha (NIB)…"
+                    onkeydown="if(event.key==='Enter') cariUsaha()">
+            </div>
+        </div>
+
+        <!-- Form Nama/Alamat -->
+        <div id="form-nama" class="hidden">
+            <div class="form-grid" style="margin-bottom:12px">
+                <div class="input-group">
+                    <i class="fas fa-store input-icon"></i>
+                    <input type="text" id="input-nama" class="form-input"
+                        placeholder="Nama Usaha…"
+                        onkeydown="if(event.key==='Enter') cariUsaha()">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-map-marker-alt input-icon"></i>
+                    <input type="text" id="input-alamat" class="form-input"
+                        placeholder="Alamat (opsional)…"
+                        onkeydown="if(event.key==='Enter') cariUsaha()">
+                </div>
+            </div>
+            <div class="select-wrap input-group">
+                <i class="fas fa-map-pin input-icon"></i>
+                <select id="select-kabupaten" class="form-select">
+                    <option value="">— Semua Kabupaten/Kota —</option>
+                    <option>LAMPUNG BARAT</option>
+                    <option>TANGGAMUS</option>
+                    <option>LAMPUNG SELATAN</option>
+                    <option>LAMPUNG TIMUR</option>
+                    <option>LAMPUNG TENGAH</option>
+                    <option>LAMPUNG UTARA</option>
+                    <option>WAY KANAN</option>
+                    <option>TULANGBAWANG</option>
+                    <option>PESAWARAN</option>
+                    <option>PRINGSEWU</option>
+                    <option>MESUJI</option>
+                    <option>TULANG BAWANG BARAT</option>
+                    <option>PESISIR BARAT</option>
+                    <option>BANDAR LAMPUNG</option>
+                    <option>METRO</option>
+                </select>
+                <i class="fas fa-chevron-down chevron"></i>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="search-footer">
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="bukaModalTambah()">
+                    <i class="fas fa-plus"></i> Tambah Satu Usaha
+                </button>
+                <div class="btn-divider"></div>
+                <button class="btn btn-success" onclick="bukaModalUpload()">
+                    <i class="fas fa-file-excel"></i> Upload Excel (Massal)
+                </button>
+                <div class="btn-divider"></div>
+                <button class="btn btn-ghost" onclick="downloadTemplate()" title="Download template Excel">
+                    <i class="fas fa-download"></i> Template
+                </button>
+            </div>
+            <button class="btn btn-primary" onclick="cariUsaha()">
+                <i class="fas fa-search"></i> Cari Sekarang
+            </button>
+        </div>
+    </div>
+
+    <!-- ======================== RESULTS ======================== -->
+    <div id="results-area" class="hidden">
+        <div class="results-header">
+            <div class="results-count">
+                <i class="fas fa-list-ul"></i>
+                <span id="results-count-text">0 hasil ditemukan</span>
+            </div>
+            <div style="font-size:12px;color:var(--slate-400);" id="results-page-info"></div>
+        </div>
+        <div id="results-list"></div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- ======================== EMPTY STATE ======================== -->
+    <div id="state-idle" class="state-box">
+        <div class="state-icon"><i class="fas fa-magnifying-glass"></i></div>
+        <h3>Mulai Pencarian</h3>
+        <p>Masukkan NIB atau Nama Usaha Anda<br>lalu klik "Cari Sekarang".</p>
+    </div>
+
+    <div id="state-loading" class="state-box hidden">
+        <div class="spinner"></div>
+        <h3>Sedang Mencari…</h3>
+        <p>Mohon tunggu sebentar.</p>
+    </div>
+
+    <div id="state-empty" class="state-box hidden">
+        <div class="state-icon" style="background:#fee2e2;color:#dc2626"><i class="fas fa-inbox"></i></div>
+        <h3>Data Tidak Ditemukan</h3>
+        <p>Coba gunakan kata kunci lain, atau tambahkan usaha baru<br>jika memang belum terdaftar.</p>
+    </div>
+
+</div><!-- /app-wrapper -->
+
+<!-- ======================== MODAL TAMBAH SATU ======================== -->
+<div class="modal-overlay" id="modal-tambah">
+    <div class="modal">
+        <div class="modal-header">
+            <h2><i class="fas fa-plus-circle" style="color:var(--orange-500);margin-right:8px;font-size:16px"></i>Tambah Usaha Baru</h2>
+            <button class="modal-close" onclick="tutupModal('modal-tambah')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-field">
+                <label class="form-label">Nomor Induk Berusaha (NIB) *</label>
+                <div class="input-group" style="margin-bottom:0">
+                    <i class="fas fa-hashtag input-icon"></i>
+                    <input type="text" id="tambah-nib" class="form-input" placeholder="Contoh: 9120300123456">
+                </div>
+            </div>
+            <div class="form-field">
+                <label class="form-label">Nama Usaha *</label>
+                <div class="input-group" style="margin-bottom:0">
+                    <i class="fas fa-building input-icon"></i>
+                    <input type="text" id="tambah-nama" class="form-input" placeholder="Nama resmi usaha">
+                </div>
+            </div>
+            <div class="form-field">
+                <label class="form-label">Nama Komersil</label>
+                <div class="input-group" style="margin-bottom:0">
+                    <i class="fas fa-tag input-icon"></i>
+                    <input type="text" id="tambah-komersil" class="form-input" placeholder="Nama yang dikenal masyarakat (opsional)">
+                </div>
+            </div>
+            <div class="form-field">
+                <label class="form-label">Provinsi</label>
+                <div class="form-readonly">Lampung</div>
+            </div>
+            <div class="form-field">
+                <label class="form-label">Kabupaten / Kota *</label>
+                <div class="select-wrap input-group" style="margin-bottom:0">
+                    <i class="fas fa-map-pin input-icon"></i>
+                    <select id="tambah-kab" class="form-select">
+                        <option value="">— Pilih Kabupaten/Kota —</option>
+                        <option>LAMPUNG BARAT</option>
+                        <option>TANGGAMUS</option>
+                        <option>LAMPUNG SELATAN</option>
+                        <option>LAMPUNG TIMUR</option>
+                        <option>LAMPUNG TENGAH</option>
+                        <option>LAMPUNG UTARA</option>
+                        <option>WAY KANAN</option>
+                        <option>TULANGBAWANG</option>
+                        <option>PESAWARAN</option>
+                        <option>PRINGSEWU</option>
+                        <option>MESUJI</option>
+                        <option>TULANG BAWANG BARAT</option>
+                        <option>PESISIR BARAT</option>
+                        <option>BANDAR LAMPUNG</option>
+                        <option>METRO</option>
+                    </select>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+            </div>
+            <div class="form-field">
+                <label class="form-label">Alamat Lengkap *</label>
+                <textarea id="tambah-alamat" class="form-input" rows="2"
+                    style="padding-left:16px;resize:vertical"
+                    placeholder="Jalan, desa/kelurahan, kecamatan…"></textarea>
+            </div>
+            <div class="form-field" style="margin-bottom:0">
+                <label class="form-label">Alamat Email *</label>
+                <div class="input-group" style="margin-bottom:0">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="tambah-email" class="form-input" placeholder="email@perusahaan.com">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="tutupModal('modal-tambah')">Batal</button>
+            <button class="btn btn-primary" onclick="simpanUsahaBaru()">
+                <i class="fas fa-save"></i> Simpan Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ======================== MODAL UPLOAD EXCEL ======================== -->
+<div class="modal-overlay" id="modal-upload">
+    <div class="modal">
+        <div class="modal-header">
+            <h2><i class="fas fa-file-excel" style="color:#16a34a;margin-right:8px;font-size:16px"></i>Upload Data Massal</h2>
+            <button class="modal-close" onclick="tutupModal('modal-upload')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <!-- Upload area -->
+            <div class="upload-area" id="upload-area"
+                onclick="document.getElementById('input-excel').click()"
+                ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <h4>Klik atau seret file Excel ke sini</h4>
+                <p>Format yang didukung: <strong>.xlsx</strong> atau <strong>.xls</strong></p>
+                <p class="upload-hint"><i class="fas fa-info-circle"></i> Gunakan template yang disediakan agar kolom sesuai</p>
+            </div>
+            <input type="file" id="input-excel" accept=".xlsx,.xls" class="hidden" onchange="prosesUploadExcel(event)">
+
+            <!-- Progress -->
+            <div class="progress-bar-wrap" id="progress-wrap">
+                <div class="progress-label">
+                    <span id="progress-text">Mengirim data…</span>
+                    <span id="progress-pct">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+                </div>
+            </div>
+
+            <!-- Template note -->
+            <div class="template-note">
+                <strong><i class="fas fa-lightbulb"></i> Kolom wajib dalam template Excel:</strong><br>
+                <code>NIB</code> · <code>Nama Usaha</code> · <code>Nama Komersil</code> · <code>Kabupaten/Kota</code> · <code>Alamat</code> · <code>Email</code><br>
+                <br>
+                Belum punya template? <a href="#" onclick="downloadTemplate();return false;" style="color:var(--orange-700);font-weight:700">Download di sini</a>.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="tutupModal('modal-upload')">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- ======================== FIREBASE + LOGIC ======================== -->
+<script type="module">
+
+// ─────────────────────────────────────────────
+// FIREBASE SETUP
+// ─────────────────────────────────────────────
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import {
+    getFirestore,
+    collection, getDocs, addDoc, doc, updateDoc,
+    query, where, orderBy, limit, writeBatch, getCountFromServer
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+// ⬇️ PASTE FIREBASE CONFIG ANDA DI SINI
+const firebaseConfig = {
+    apiKey: "AIzaSyDT3VUNM6LZYZItOtuyItqXYVvG6J8fx-s",
+    authDomain: "se2026-f3003.firebaseapp.com",
+    projectId: "se2026-f3003",
+    storageBucket: "se2026-f3003.firebasestorage.app",
+    messagingSenderId: "80341327498",
+    appId: "1:80341327498:web:0cf9a854246eb784be5773"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+const COL = "perusahaan"; // nama koleksi Firestore
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let allResults   = [];  // semua hasil pencarian saat ini
+let currentPage  = 1;
+const PAGE_SIZE  = 10;
+let activeTab    = 'nib';
+
+// ─────────────────────────────────────────────
+// STATS — diload saat halaman dibuka
+// ─────────────────────────────────────────────
+async function loadStats() {
+    try {
+        const snap      = await getDocs(collection(db, COL));
+        const total     = snap.size;
+        let beremail    = 0;
+        snap.forEach(d => { if (d.data().email) beremail++; });
+        const kosong = total - beremail;
+
+        animateCounter('stat-total',    total);
+        animateCounter('stat-beremail', beremail);
+        animateCounter('stat-kosong',   kosong);
+    } catch(e) {
+        // Firebase belum dikonfigurasi — tampilkan tanda strip
+    }
+}
+
+function animateCounter(id, target) {
+    const el = document.getElementById(id);
+    let current = 0;
+    const step = Math.ceil(target / 30);
+    const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = current.toLocaleString('id-ID');
+        if (current >= target) clearInterval(timer);
+    }, 40);
+}
+
+loadStats();
+
+// ─────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────
+window.switchTab = function(tab) {
+    activeTab = tab;
+    document.getElementById('tab-nib').classList.toggle('active',  tab === 'nib');
+    document.getElementById('tab-nama').classList.toggle('active', tab === 'nama');
+    document.getElementById('form-nib').classList.toggle('hidden', tab !== 'nib');
+    document.getElementById('form-nama').classList.toggle('hidden', tab !== 'nama');
+};
+
+// ─────────────────────────────────────────────
+// SEARCH
+// ─────────────────────────────────────────────
+window.cariUsaha = async function() {
+    setState('loading');
+
+    try {
+        const ref = collection(db, COL);
+        let q;
+
+        if (activeTab === 'nib') {
+            const nib = document.getElementById('input-nib').value.trim();
+            if (!nib) { toast('Masukkan NIB terlebih dahulu.', 'warning'); setState('idle'); return; }
+            q = query(ref, where('nib', '==', nib));
+
+        } else {
+            const nama   = document.getElementById('input-nama').value.trim().toLowerCase();
+            const alamat = document.getElementById('input-alamat').value.trim().toLowerCase();
+            const kab    = document.getElementById('select-kabupaten').value;
+
+            if (!nama && !kab) { toast('Masukkan Nama Usaha atau pilih Kabupaten/Kota.', 'warning'); setState('idle'); return; }
+
+            // Ambil semua, filter client-side (Firestore tidak support full-text search)
+            const snap = await getDocs(ref);
+            let data = [];
+            snap.forEach(d => data.push({ id: d.id, ...d.data() }));
+
+            if (nama)   data = data.filter(r => (r.namaUsaha||'').toLowerCase().includes(nama) || (r.namaKomersil||'').toLowerCase().includes(nama));
+            if (alamat) data = data.filter(r => (r.alamat||'').toLowerCase().includes(alamat));
+            if (kab)    data = data.filter(r => (r.kabkot||'').toUpperCase() === kab.toUpperCase());
+
+            renderResults(data);
+            return;
+        }
+
+        const snap = await getDocs(q);
+        const data = [];
+        snap.forEach(d => data.push({ id: d.id, ...d.data() }));
+        renderResults(data);
+
+    } catch(e) {
+        console.error(e);
+        toast('Gagal mengambil data. Pastikan Firebase sudah dikonfigurasi.', 'error');
+        setState('idle');
+    }
+};
+
+// ─────────────────────────────────────────────
+// RENDER RESULTS
+// ─────────────────────────────────────────────
+function renderResults(data) {
+    allResults  = data;
+    currentPage = 1;
+    if (data.length === 0) { setState('empty'); return; }
+    setState('results');
+    renderPage();
+}
+
+function renderPage() {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const end   = Math.min(start + PAGE_SIZE, allResults.length);
+    const page  = allResults.slice(start, end);
+    const total = allResults.length;
+
+    document.getElementById('results-count-text').textContent =
+        `${total.toLocaleString('id-ID')} hasil ditemukan`;
+    document.getElementById('results-page-info').textContent =
+        total > PAGE_SIZE ? `Halaman ${currentPage} dari ${Math.ceil(total/PAGE_SIZE)}` : '';
+
+    const list = document.getElementById('results-list');
+    list.innerHTML = '';
+
+    page.forEach((item, i) => {
+        const card = buildCard(item);
+        card.style.animationDelay = `${i * 0.04}s`;
+        list.appendChild(card);
+    });
+
+    renderPagination(total);
+    window.scrollTo({ top: document.getElementById('results-area').offsetTop - 20, behavior: 'smooth' });
+}
+
+function buildCard(item) {
+    const hasEmail = !!item.email;
+    const div = document.createElement('div');
+    div.className = 'result-card';
+    div.innerHTML = `
+        <div class="card-top">
+            <div class="card-left">
+                <div class="card-name">${esc(item.namaUsaha || '—')}</div>
+                ${item.namaKomersil && item.namaKomersil !== item.namaUsaha
+                    ? `<div class="card-komersil"><i class="fas fa-tag" style="margin-right:4px;opacity:.6"></i>${esc(item.namaKomersil)}</div>`
+                    : ''}
+                <div class="card-badges">
+                    <span class="badge badge-orange"><i class="fas fa-map-marker-alt"></i>${esc(item.kabkot||'—')}</span>
+                    <span class="badge badge-slate"><i class="fas fa-hashtag"></i>NIB: ${esc(item.nib||'—')}</span>
+                    ${hasEmail
+                        ? '<span class="badge badge-green"><i class="fas fa-check-circle"></i>Email Terisi</span>'
+                        : '<span class="badge badge-yellow"><i class="fas fa-exclamation-circle"></i>Email Belum Diisi</span>'}
+                </div>
+            </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="card-meta">
+            <div class="meta-item">
+                <span class="meta-label">Alamat</span>
+                <span class="meta-value">${esc(item.alamat||'—')}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Provinsi</span>
+                <span class="meta-value">Lampung</span>
+            </div>
+        </div>
+
+        <!-- Email Section -->
+        <div class="email-section ${hasEmail ? 'has-email' : ''}" id="email-sec-${item.id}">
+            <div class="email-label"><i class="fas fa-envelope" style="margin-right:4px"></i>Alamat Email</div>
+            ${hasEmail
+                ? `<div class="email-value">${esc(item.email)}</div>`
+                : `<div class="email-missing">Belum diisi — klik "Isi Email" untuk melengkapi data ini</div>`}
+        </div>
+
+        <!-- Inline Edit Form -->
+        <div class="email-edit-form" id="edit-form-${item.id}">
+            <input type="email" class="email-edit-input" id="edit-input-${item.id}"
+                placeholder="email@perusahaan.com"
+                value="${hasEmail ? esc(item.email) : ''}"
+                onkeydown="if(event.key==='Enter') window.simpanEmail('${item.id}')">
+            <button class="btn btn-primary btn-sm" onclick="window.simpanEmail('${item.id}')">
+                <i class="fas fa-check"></i> Simpan
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="window.toggleEdit('${item.id}', false)">
+                Batal
+            </button>
+        </div>
+
+        <div class="card-actions">
+            <button class="btn btn-primary btn-sm" id="btn-isi-${item.id}"
+                onclick="window.toggleEdit('${item.id}', true)">
+                <i class="fas fa-${hasEmail ? 'pen' : 'plus'}"></i>
+                ${hasEmail ? 'Ubah Email' : 'Isi Email'}
+            </button>
+        </div>
+    `;
+    return div;
+}
+
+window.toggleEdit = function(id, show) {
+    document.getElementById(`edit-form-${id}`).classList.toggle('show', show);
+    if (show) document.getElementById(`edit-input-${id}`).focus();
+};
+
+window.simpanEmail = async function(id) {
+    const input = document.getElementById(`edit-input-${id}`);
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) { toast('Masukkan alamat email yang valid.', 'warning'); return; }
+
+    try {
+        await updateDoc(doc(db, COL, id), { email });
+        // Update local state
+        const item = allResults.find(r => r.id === id);
+        if (item) item.email = email;
+
+        // Update UI
+        const sec = document.getElementById(`email-sec-${id}`);
+        sec.classList.add('has-email');
+        sec.innerHTML = `<div class="email-label"><i class="fas fa-envelope" style="margin-right:4px"></i>Alamat Email</div>
+                         <div class="email-value">${esc(email)}</div>`;
+
+        document.getElementById(`edit-form-${id}`).classList.remove('show');
+        document.getElementById(`btn-isi-${id}`).innerHTML = '<i class="fas fa-pen"></i> Ubah Email';
+
+        // Refresh stats
+        loadStats();
+        toast('Email berhasil disimpan!', 'success');
+    } catch(e) {
+        console.error(e);
+        toast('Gagal menyimpan. Coba lagi.', 'error');
+    }
+};
+
+// ─────────────────────────────────────────────
+// PAGINATION
+// ─────────────────────────────────────────────
+function renderPagination(total) {
+    const totalPages = Math.ceil(total / PAGE_SIZE);
+    const pag = document.getElementById('pagination');
+    pag.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const addBtn = (label, page, isActive, isDisabled) => {
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (isActive ? ' active' : '');
+        btn.innerHTML = label;
+        btn.disabled  = isDisabled;
+        if (!isDisabled && !isActive) btn.onclick = () => { currentPage = page; renderPage(); };
+        pag.appendChild(btn);
+    };
+
+    addBtn('<i class="fas fa-chevron-left"></i>', currentPage - 1, false, currentPage === 1);
+    const range = getPageRange(currentPage, totalPages);
+    range.forEach(p => {
+        if (p === '…') {
+            const s = document.createElement('span');
+            s.className = 'page-btn';
+            s.textContent = '…';
+            s.style.cursor = 'default';
+            pag.appendChild(s);
+        } else {
+            addBtn(p, p, p === currentPage, false);
+        }
+    });
+    addBtn('<i class="fas fa-chevron-right"></i>', currentPage + 1, false, currentPage === totalPages);
+}
+
+function getPageRange(cur, total) {
+    if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
+    if (cur <= 4) return [1,2,3,4,5,'…',total];
+    if (cur >= total - 3) return [1,'…',total-4,total-3,total-2,total-1,total];
+    return [1,'…',cur-1,cur,cur+1,'…',total];
+}
+
+// ─────────────────────────────────────────────
+// STATE MANAGEMENT
+// ─────────────────────────────────────────────
+function setState(s) {
+    document.getElementById('state-idle').classList.toggle('hidden',    s !== 'idle');
+    document.getElementById('state-loading').classList.toggle('hidden', s !== 'loading');
+    document.getElementById('state-empty').classList.toggle('hidden',   s !== 'empty');
+    document.getElementById('results-area').classList.toggle('hidden',  s !== 'results');
+}
+
+// ─────────────────────────────────────────────
+// MODAL HELPERS
+// ─────────────────────────────────────────────
+window.bukaModalTambah = function() {
+    document.getElementById('modal-tambah').classList.add('open');
+};
+window.bukaModalUpload = function() {
+    document.getElementById('modal-upload').classList.add('open');
+    document.getElementById('input-excel').value = '';
+    document.getElementById('progress-wrap').classList.remove('show');
+    document.getElementById('upload-area').classList.remove('drag-over');
+};
+window.tutupModal = function(id) {
+    document.getElementById(id).classList.remove('open');
+};
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ─────────────────────────────────────────────
+// SIMPAN USAHA BARU (SATU PERSATU)
+// ─────────────────────────────────────────────
+window.simpanUsahaBaru = async function() {
+    const nib    = document.getElementById('tambah-nib').value.trim();
+    const nama   = document.getElementById('tambah-nama').value.trim();
+    const kom    = document.getElementById('tambah-komersil').value.trim();
+    const kab    = document.getElementById('tambah-kab').value;
+    const alamat = document.getElementById('tambah-alamat').value.trim();
+    const email  = document.getElementById('tambah-email').value.trim();
+
+    if (!nib || !nama || !kab || !alamat || !email) {
+        toast('Semua kolom bertanda * wajib diisi.', 'warning');
+        return;
+    }
+    if (!email.includes('@')) { toast('Format email tidak valid.', 'warning'); return; }
+
+    try {
+        await addDoc(collection(db, COL), {
+            nib, namaUsaha: nama, namaKomersil: kom || nama,
+            prov: 'Lampung', kabkot: kab, alamat, email,
+            createdAt: new Date().toISOString()
+        });
+        tutupModal('modal-tambah');
+        // Reset form
+        ['tambah-nib','tambah-nama','tambah-komersil','tambah-alamat','tambah-email'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        document.getElementById('tambah-kab').value = '';
+        loadStats();
+        toast('Usaha baru berhasil ditambahkan!', 'success');
+    } catch(e) {
+        console.error(e);
+        toast('Gagal menyimpan data. Periksa konfigurasi Firebase.', 'error');
+    }
+};
+
+// ─────────────────────────────────────────────
+// UPLOAD EXCEL (MASSAL)
+// ─────────────────────────────────────────────
+window.dragOver = function(e) {
+    e.preventDefault();
+    document.getElementById('upload-area').classList.add('drag-over');
+};
+window.dragLeave = function() {
+    document.getElementById('upload-area').classList.remove('drag-over');
+};
+window.dropFile = function(e) {
+    e.preventDefault();
+    document.getElementById('upload-area').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) prosesFile(file);
+};
+
+window.prosesUploadExcel = function(e) {
+    const file = e.target.files[0];
+    if (file) prosesFile(file);
+};
+
+function prosesFile(file) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['xlsx','xls'].includes(ext)) {
+        toast('Format file harus .xlsx atau .xls', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function(ev) {
+        const wb   = XLSX.read(ev.target.result, { type: 'binary' });
+        const ws   = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+        if (rows.length === 0) { toast('File Excel kosong.', 'warning'); return; }
+
+        // Validasi kolom
+        const first  = rows[0];
+        const needed = ['NIB','Nama Usaha','Kabupaten/Kota','Alamat'];
+        const missing = needed.filter(k => !(k in first));
+        if (missing.length) {
+            toast(`Kolom tidak ditemukan: ${missing.join(', ')}. Gunakan template yang disediakan.`, 'error');
+            return;
+        }
+
+        // Progress UI
+        const wrap = document.getElementById('progress-wrap');
+        const fill = document.getElementById('progress-fill');
+        const pct  = document.getElementById('progress-pct');
+        const txt  = document.getElementById('progress-text');
+        wrap.classList.add('show');
+
+        const total    = rows.length;
+        let done       = 0;
+        let gagal      = 0;
+        const CHUNK    = 400; // Firestore max batch = 500, ambil 400 untuk aman
+
+        for (let i = 0; i < total; i += CHUNK) {
+            const chunk = rows.slice(i, i + CHUNK);
+            const batch = writeBatch(db);
+
+            chunk.forEach(row => {
+                const newDoc = doc(collection(db, COL));
+                batch.set(newDoc, {
+                    nib:          String(row['NIB'] || '').trim(),
+                    namaUsaha:    String(row['Nama Usaha'] || '').trim(),
+                    namaKomersil: String(row['Nama Komersil'] || row['Nama Usaha'] || '').trim(),
+                    prov:         'Lampung',
+                    kabkot:       String(row['Kabupaten/Kota'] || '').trim(),
+                    alamat:       String(row['Alamat'] || '').trim(),
+                    email:        String(row['Email'] || '').trim(),
+                    createdAt:    new Date().toISOString()
                 });
-                
-                window.tampilkanNotif(`Data email berhasil diverifikasi dan disimpan!`, "success");
-                window.cariUsaha(); 
-            } catch (error) {
-                console.error("Error update data:", error);
-                window.tampilkanNotif("Gagal menyimpan data ke database.", "error");
-                tombolSimpan.innerHTML = teksAwal;
-                tombolSimpan.disabled = false;
-            }
-        };
-
-        window.simpanUsahaBaru = async function() {
-            const nib = document.getElementById('tambah-nib').value.trim();
-            const nama = document.getElementById('tambah-nama').value.trim();
-            const kab = document.getElementById('tambah-kab').value;
-            const alamat = document.getElementById('tambah-alamat').value.trim();
-            const email = document.getElementById('tambah-email').value.trim();
-
-            if(!nib || !nama || !alamat || !email) {
-                alert("Harap isi semua kolom yang wajib (*)");
-                return;
-            }
-
-            const tombolSimpanBtn = document.querySelector('#modal-tambah button.bg-purple-500');
-            const teksAwalBtn = tombolSimpanBtn.innerText;
-            tombolSimpanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-            tombolSimpanBtn.disabled = true;
+            });
 
             try {
-                const usahaBaru = {
-                    nib: nib,
-                    nama: nama,
-                    provinsi: "LAMPUNG",
-                    kabupaten: kab,
-                    alamat: alamat,
-                    email: email,
-                    email_terverifikasi: false,
-                    waktu_dibuat: new Date()
-                };
-
-                await addDoc(collection(db, NAMA_KOLEKSI), usahaBaru);
-                
-                window.tutupModalTambah();
-                window.tampilkanNotif("Usaha baru berhasil ditambahkan! Anda bisa mencari datanya sekarang.", "success");
-                
-                document.getElementById('tambah-nib').value = '';
-                document.getElementById('tambah-nama').value = '';
-                document.getElementById('tambah-alamat').value = '';
-                document.getElementById('tambah-email').value = '';
-            } catch (error) {
-                console.error("Error tambah data:", error);
-                window.tampilkanNotif("Gagal menambahkan usaha baru ke database.", "error");
-            } finally {
-                tombolSimpanBtn.innerHTML = teksAwalBtn;
-                tombolSimpanBtn.disabled = false;
+                await batch.commit();
+                done += chunk.length;
+            } catch(e) {
+                console.error(e);
+                gagal += chunk.length;
             }
-        };
-    </script>
+
+            const p = Math.round((done + gagal) / total * 100);
+            fill.style.width = p + '%';
+            pct.textContent  = p + '%';
+            txt.textContent  = `Mengirim ${Math.min(done + gagal, total)} dari ${total} data…`;
+        }
+
+        loadStats();
+        toast(`✅ ${done} data berhasil dikirim${gagal > 0 ? `, ${gagal} gagal` : ''}.`, done > 0 ? 'success' : 'error');
+    };
+    reader.readAsBinaryString(file);
+}
+
+// ─────────────────────────────────────────────
+// DOWNLOAD TEMPLATE EXCEL
+// ─────────────────────────────────────────────
+window.downloadTemplate = function() {
+    const headers = [['NIB','Nama Usaha','Nama Komersil','Kabupaten/Kota','Alamat','Email']];
+    const ws = XLSX.utils.aoa_to_sheet(headers);
+    // Lebar kolom
+    ws['!cols'] = [
+        {wch:20},{wch:40},{wch:40},{wch:20},{wch:50},{wch:35}
+    ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Template');
+    XLSX.writeFile(wb, 'Template_Upload_Usaha_SE2026.xlsx');
+    toast('Template berhasil diunduh!', 'success');
+};
+
+// ─────────────────────────────────────────────
+// TOAST NOTIFICATIONS
+// ─────────────────────────────────────────────
+window.toast = function(msg, type = 'info') {
+    const icons = { info: 'fa-info-circle', success: 'fa-check-circle', error: 'fa-exclamation-triangle', warning: 'fa-exclamation-circle' };
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `<i class="fas ${icons[type]} toast-icon"></i><span>${msg}</span>`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => {
+        el.style.animation = 'toastOut .3s ease forwards';
+        setTimeout(() => el.remove(), 300);
+    }, 4500);
+};
+
+// ─────────────────────────────────────────────
+// UTILITY
+// ─────────────────────────────────────────────
+function esc(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+</script>
 </body>
 </html>
