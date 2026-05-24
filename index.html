@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Direktori Usaha - Provinsi Lampung</title>
+    <!-- Tailwind CSS untuk Desain -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active { background-color: #8b5cf6; color: white; border-color: #8b5cf6; }
+        .tab-inactive { background-color: #f3f4f6; color: #4b5563; border-color: #e5e7eb; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8b5cf6; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+
+    <!-- Container Utama -->
+    <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- Header / Banner -->
+        <div class="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-6 md:p-10 text-white shadow-lg relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex items-center space-x-3 mb-2">
+                    <div class="bg-white/20 p-3 rounded-lg backdrop-blur-sm">
+                        <i class="fas fa-search text-xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold">Cari & Verifikasi Usaha</h1>
+                </div>
+                <p class="text-purple-100 text-sm md:text-base mt-2">
+                    Temukan data usaha Anda berdasarkan NIB atau Nama Usaha untuk memverifikasi alamat email perusahaan (Khusus Provinsi Lampung).
+                </p>
+            </div>
+            <!-- Dekorasi background -->
+            <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-20 -mt-20"></div>
+            <div class="absolute right-20 bottom-0 w-40 h-40 bg-white opacity-10 rounded-full -mb-10"></div>
+        </div>
+
+        <!-- Kotak Pencarian -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <!-- Tabs -->
+            <div class="flex space-x-3 mb-6">
+                <button id="tab-nib" onclick="switchTab('nib')" class="tab-active px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2">
+                    <i class="fas fa-id-card"></i> Berdasarkan NIB
+                </button>
+                <button id="tab-nama" onclick="switchTab('nama')" class="tab-inactive px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2">
+                    <i class="fas fa-building"></i> Nama / Alamat
+                </button>
+            </div>
+
+            <!-- Form Pencarian NIB -->
+            <div id="form-nib" class="block space-y-4">
+                <div class="relative">
+                    <i class="fas fa-hashtag absolute left-4 top-3.5 text-gray-400"></i>
+                    <input type="text" id="input-nib" placeholder="Masukkan Nomor Induk Berusaha (NIB)..." 
+                           class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all">
+                </div>
+            </div>
+
+            <!-- Form Pencarian Nama/Alamat -->
+            <div id="form-nama" class="hidden space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="relative">
+                        <i class="fas fa-store absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="text" id="input-nama" placeholder="Masukkan Nama Usaha..." 
+                               class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-map-marker-alt absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="text" id="input-alamat" placeholder="Alamat (opsional)..." 
+                               class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="relative">
+                        <select id="select-provinsi" class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all appearance-none cursor-pointer">
+                            <option value="">-- Pilih Provinsi (Wajib) --</option>
+                            <option value="LAMPUNG">LAMPUNG</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                    <div class="relative">
+                        <select id="select-kabupaten" class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all appearance-none cursor-pointer">
+                            <option value="">-- Pilih Kabupaten/Kota (Opsional) --</option>
+                            <option value="Bandar Lampung">Bandar Lampung</option>
+                            <option value="Metro">Metro</option>
+                            <option value="Pesawaran">Pesawaran</option>
+                            <option value="Lampung Selatan">Lampung Selatan</option>
+                            <option value="Lampung Tengah">Lampung Tengah</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div class="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm flex items-start gap-2">
+                    <i class="fas fa-info-circle mt-0.5"></i>
+                    <p>Pencarian nama/alamat <strong>wajib memilih Provinsi</strong> terlebih dahulu.</p>
+                </div>
+            </div>
+
+            <!-- Tombol Cari & Tambah -->
+            <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-t pt-6">
+                <button onclick="bukaModalTambah()" class="text-purple-600 font-medium hover:text-purple-800 transition-colors flex items-center gap-2">
+                    <i class="fas fa-plus-circle"></i> Usaha tidak ditemukan? Tambah Baru
+                </button>
+                <button onclick="cariUsaha()" class="w-full sm:w-auto bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-xl font-medium transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-search"></i> Cari Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Notifikasi (Custom Alert) -->
+        <div id="notifikasi" class="hidden p-4 rounded-xl shadow-sm text-sm font-medium transition-all transform translate-y-0 opacity-100 flex items-start gap-3">
+            <i id="notif-icon" class="fas fa-info-circle mt-0.5 text-lg"></i>
+            <span id="notif-pesan"></span>
+        </div>
+
+        <!-- Hasil Pencarian -->
+        <div id="hasil-container" class="hidden space-y-4">
+            <div class="flex items-center justify-between bg-purple-50 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium w-max">
+                <i class="fas fa-list-ul mr-2"></i> <span id="jumlah-hasil">Menampilkan 0 hasil</span>
+            </div>
+
+            <div id="list-usaha" class="space-y-4">
+                <!-- Data akan di-render di sini oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Usaha -->
+    <div id="modal-tambah" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl transform transition-all">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-800">Tambah Usaha Baru</h2>
+                <button onclick="tutupModalTambah()" class="text-gray-400 hover:text-red-500 text-xl transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Induk Berusaha (NIB) *</label>
+                    <input type="text" id="tambah-nib" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Usaha *</label>
+                    <input type="text" id="tambah-nama" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi *</label>
+                    <input type="text" value="LAMPUNG" readonly class="w-full p-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-500 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota *</label>
+                    <select id="tambah-kab" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        <option value="Bandar Lampung">Bandar Lampung</option>
+                        <option value="Metro">Metro</option>
+                        <option value="Pesawaran">Pesawaran</option>
+                        <option value="Lampung Selatan">Lampung Selatan</option>
+                        <option value="Lampung Tengah">Lampung Tengah</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap *</label>
+                    <textarea id="tambah-alamat" rows="2" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Email *</label>
+                    <input type="email" id="tambah-email" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
+                <button onclick="tutupModalTambah()" class="px-5 py-2.5 rounded-xl text-gray-600 font-medium hover:bg-gray-200 transition-colors">Batal</button>
+                <button onclick="simpanUsahaBaru()" class="px-5 py-2.5 rounded-xl bg-purple-500 text-white font-medium hover:bg-purple-600 transition-colors">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+        <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Nanti ganti dengan konfigurasi dari Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyDT3VUNM6LZYZItOtuyItqXYVvG6J8fx-s",
+            authDomain: "se2026-f3003.firebaseapp.com",
+            projectId: "se2026-f3003",
+            storageBucket: "se2026-f3003.firebasestorage.app",
+            messagingSenderId: "80341327498",
+            appId: "1:80341327498:web:0cf9a854246eb784be5773"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+    </script> 
+    -->
+
+    <script>
+        // ==========================================
+        // DATA DUMMY (Untuk Demo sebelum ada Firebase)
+        // ==========================================
+        let dataUsaha = [
+            { id: "1", nib: "1234567890123", nama: "PT Laju Jaya Lampung", provinsi: "LAMPUNG", kabupaten: "Bandar Lampung", alamat: "Jl. Teuku Umar No 15", email: "info@lajujaya.co.id", email_terverifikasi: false },
+            { id: "2", nib: "9876543210987", nama: "CV Kopi Pesawaran Makmur", provinsi: "LAMPUNG", kabupaten: "Pesawaran", alamat: "Desa Gedong Tataan RT 01", email: "", email_terverifikasi: false },
+            { id: "3", nib: "1122334455667", nama: "Toko Material Bangun", provinsi: "LAMPUNG", kabupaten: "Lampung Selatan", alamat: "Jl. Lintas Sumatera Km 10", email: "salah@email.com", email_terverifikasi: false },
+            { id: "4", nib: "9988776655443", nama: "Klinik Sehat Metro", provinsi: "LAMPUNG", kabupaten: "Metro", alamat: "Jl. Jendral Sudirman No 88", email: "kliniksehat@gmail.com", email_terverifikasi: true }
+        ];
+
+        // ==========================================
+        // LOGIKA TAMPILAN (TAB & MODAL)
+        // ==========================================
+        let modePencarian = 'nib'; // default
+
+        function switchTab(tab) {
+            modePencarian = tab;
+            const tabNib = document.getElementById('tab-nib');
+            const tabNama = document.getElementById('tab-nama');
+            const formNib = document.getElementById('form-nib');
+            const formNama = document.getElementById('form-nama');
+
+            if (tab === 'nib') {
+                tabNib.className = "tab-active px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2";
+                tabNama.className = "tab-inactive px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2";
+                formNib.classList.remove('hidden');
+                formNama.classList.add('hidden');
+            } else {
+                tabNama.className = "tab-active px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2";
+                tabNib.className = "tab-inactive px-5 py-2.5 rounded-full text-sm font-medium transition-colors border flex items-center gap-2";
+                formNama.classList.remove('hidden');
+                formNib.classList.add('hidden');
+            }
+        }
+
+        function bukaModalTambah() {
+            document.getElementById('modal-tambah').classList.remove('hidden');
+            document.getElementById('modal-tambah').classList.add('flex');
+        }
+
+        function tutupModalTambah() {
+            document.getElementById('modal-tambah').classList.add('hidden');
+            document.getElementById('modal-tambah').classList.remove('flex');
+        }
+
+        function tampilkanNotif(pesan, tipe = 'info') {
+            const notif = document.getElementById('notifikasi');
+            const ikon = document.getElementById('notif-icon');
+            const teks = document.getElementById('notif-pesan');
+            
+            notif.classList.remove('hidden', 'bg-blue-50', 'text-blue-700', 'bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700');
+            
+            if (tipe === 'error') {
+                notif.classList.add('bg-red-50', 'text-red-700');
+                ikon.className = 'fas fa-exclamation-triangle mt-0.5 text-lg';
+            } else if (tipe === 'success') {
+                notif.classList.add('bg-green-50', 'text-green-700');
+                ikon.className = 'fas fa-check-circle mt-0.5 text-lg';
+            } else {
+                notif.classList.add('bg-blue-50', 'text-blue-700');
+                ikon.className = 'fas fa-info-circle mt-0.5 text-lg';
+            }
+
+            teks.innerHTML = pesan;
+            setTimeout(() => notif.classList.add('hidden'), 5000); // Sembunyikan setelah 5 detik
+        }
+
+        // ==========================================
+        // LOGIKA PENCARIAN
+        // ==========================================
+        function cariUsaha() {
+            let hasil = [];
+            
+            if (modePencarian === 'nib') {
+                const nibVal = document.getElementById('input-nib').value.trim();
+                if (!nibVal) {
+                    tampilkanNotif("Harap masukkan nomor NIB.", "error");
+                    return;
+                }
+                hasil = dataUsaha.filter(u => u.nib === nibVal);
+            } 
+            else {
+                const namaVal = document.getElementById('input-nama').value.trim().toLowerCase();
+                const alamatVal = document.getElementById('input-alamat').value.trim().toLowerCase();
+                const provVal = document.getElementById('select-provinsi').value;
+                const kabVal = document.getElementById('select-kabupaten').value;
+
+                if (!provVal) {
+                    tampilkanNotif("Provinsi wajib dipilih jika mencari berdasarkan Nama/Alamat.", "error");
+                    return;
+                }
+                if (!namaVal && !alamatVal) {
+                    tampilkanNotif("Harap masukkan setidaknya Nama Usaha atau Alamat.", "error");
+                    return;
+                }
+
+                hasil = dataUsaha.filter(u => {
+                    let cocok = u.provinsi === provVal;
+                    if (namaVal) cocok = cocok && u.nama.toLowerCase().includes(namaVal);
+                    if (alamatVal) cocok = cocok && u.alamat.toLowerCase().includes(alamatVal);
+                    if (kabVal) cocok = cocok && u.kabupaten === kabVal;
+                    return cocok;
+                });
+            }
+
+            renderHasil(hasil);
+        }
+
+        function renderHasil(hasil) {
+            const container = document.getElementById('hasil-container');
+            const list = document.getElementById('list-usaha');
+            const labelJumlah = document.getElementById('jumlah-hasil');
+
+            list.innerHTML = '';
+            container.classList.remove('hidden');
+
+            if (hasil.length === 0) {
+                labelJumlah.innerText = "Tidak ada hasil ditemukan";
+                list.innerHTML = `
+                    <div class="bg-white p-8 text-center rounded-xl border border-gray-100 shadow-sm text-gray-500">
+                        <i class="fas fa-search-minus text-4xl mb-3 text-gray-300"></i>
+                        <p>Data usaha tidak ditemukan. Silakan cek kembali kata kunci atau gunakan tombol 'Tambah Baru'.</p>
+                    </div>`;
+                return;
+            }
+
+            labelJumlah.innerText = `Menampilkan ${hasil.length} hasil`;
+
+            hasil.forEach(usaha => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow";
+                
+                // Badge status email
+                let badgeEmail = '';
+                if (usaha.email_terverifikasi) {
+                    badgeEmail = `<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-md font-medium"><i class="fas fa-check-circle"></i> Email Terverifikasi</span>`;
+                } else if (!usaha.email) {
+                    badgeEmail = `<span class="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-md font-medium"><i class="fas fa-exclamation-circle"></i> Email Kosong</span>`;
+                } else {
+                    badgeEmail = `<span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-md font-medium"><i class="fas fa-clock"></i> Belum Diverifikasi</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">${usaha.nama}</h3>
+                            <div class="flex items-center gap-3 mt-2 text-sm">
+                                <span class="bg-purple-100 text-purple-700 px-2.5 py-1 rounded-md font-semibold font-mono border border-purple-200">
+                                    NIB: ${usaha.nib}
+                                </span>
+                                <span class="text-gray-500"><i class="fas fa-map-marker-alt text-purple-400"></i> ${usaha.kabupaten}</span>
+                            </div>
+                        </div>
+                        ${badgeEmail}
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4"><i class="fas fa-home text-gray-400 w-5"></i> ${usaha.alamat}</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Verifikasi Email Perusahaan:</p>
+                        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                            <input type="email" id="email-${usaha.id}" value="${usaha.email}" placeholder="Masukkan email aktif..." 
+                                   class="flex-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none">
+                            
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 bg-white border border-gray-300 px-3 py-2.5 rounded-lg w-full sm:w-auto">
+                                <input type="checkbox" id="cek-${usaha.id}" class="w-4 h-4 text-purple-600 rounded" ${usaha.email_terverifikasi ? 'checked' : ''}>
+                                Email ini sudah benar
+                            </label>
+                            
+                            <button onclick="simpanVerifikasi('${usaha.id}')" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm">
+                                Simpan
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // LOGIKA SIMPAN & UPDATE
+        // ==========================================
+        function simpanVerifikasi(id) {
+            const emailBaru = document.getElementById(`email-${id}`).value.trim();
+            const dicentang = document.getElementById(`cek-${id}`).checked;
+
+            if (!emailBaru) {
+                tampilkanNotif("Alamat email tidak boleh kosong!", "error");
+                return;
+            }
+            if (!dicentang) {
+                tampilkanNotif("Harap ceklis kotak 'Email ini sudah benar' untuk memverifikasi.", "error");
+                return;
+            }
+
+            // Simulasi update ke database
+            const index = dataUsaha.findIndex(u => u.id === id);
+            if (index !== -1) {
+                dataUsaha[index].email = emailBaru;
+                dataUsaha[index].email_terverifikasi = true;
+                
+                tampilkanNotif(`Data email untuk ${dataUsaha[index].nama} berhasil diverifikasi dan disimpan!`, "success");
+                
+                // Refresh tampilan dengan data terbaru
+                cariUsaha(); 
+            }
+            
+            // NANTI UNTUK FIREBASE:
+            // const docRef = doc(db, "perusahaan", id);
+            // await updateDoc(docRef, { email: emailBaru, email_terverifikasi: true });
+        }
+
+        function simpanUsahaBaru() {
+            const nib = document.getElementById('tambah-nib').value.trim();
+            const nama = document.getElementById('tambah-nama').value.trim();
+            const kab = document.getElementById('tambah-kab').value;
+            const alamat = document.getElementById('tambah-alamat').value.trim();
+            const email = document.getElementById('tambah-email').value.trim();
+
+            if(!nib || !nama || !alamat || !email) {
+                alert("Harap isi semua kolom yang wajib (*)");
+                return;
+            }
+
+            // Simulasi tambah ke database
+            const usahaBaru = {
+                id: "id_" + Math.random().toString(36).substr(2, 9),
+                nib: nib,
+                nama: nama,
+                provinsi: "LAMPUNG",
+                kabupaten: kab,
+                alamat: alamat,
+                email: email,
+                email_terverifikasi: false
+            };
+
+            dataUsaha.push(usahaBaru);
+            
+            tutupModalTambah();
+            tampilkanNotif("Usaha baru berhasil ditambahkan! Anda bisa mencari datanya sekarang.", "success");
+            
+            // Kosongkan form
+            document.getElementById('tambah-nib').value = '';
+            document.getElementById('tambah-nama').value = '';
+            document.getElementById('tambah-alamat').value = '';
+            document.getElementById('tambah-email').value = '';
+
+            // NANTI UNTUK FIREBASE:
+            // await addDoc(collection(db, "perusahaan"), usahaBaru);
+        }
+    </script>
+</body>
+</html>
