@@ -580,7 +580,7 @@
                         </button>
                     </div>
 
-                    <!-- Admin Section (Upload CSV & Tambah Manual & Hapus) -->
+                    <!-- Admin Section (Upload CSV & Tambah Manual) -->
                     <div class="admin-section">
                         <div class="admin-title">Menu Petugas</div>
                         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
@@ -591,11 +591,6 @@
                             <input type="file" id="input-excel" accept=".xlsx, .xls, .csv" class="hidden" onchange="prosesUploadExcel(event)">
                             <button onclick="document.getElementById('input-excel').click()" id="btn-upload" class="btn btn-outline btn-block btn-sm" style="border-color: #059669; color: #059669;">
                                 <i class="fas fa-file-excel"></i> Upload Excel Massal
-                            </button>
-
-                            <!-- TOMBOL BARU UNTUK HAPUS SEMUA DATA -->
-                            <button onclick="bukaModalHapus()" class="btn btn-outline btn-block btn-sm" style="border-color: #dc2626; color: #dc2626;">
-                                <i class="fas fa-trash-alt"></i> Kosongkan Database
                             </button>
                             
                             <button onclick="downloadTemplate()" class="btn btn-outline btn-block btn-sm" style="border: none; text-decoration: underline; background: transparent; padding: 0;">
@@ -696,21 +691,6 @@
         </div>
     </div>
 
-    <!-- Modal Konfirmasi Hapus Data -->
-    <div class="modal-overlay" id="modal-hapus">
-        <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <div class="modal-body" style="padding: 2.5rem 2rem 1.5rem 2rem;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 3.5rem; color: #dc2626; margin-bottom: 1.25rem;"></i>
-                <h2 class="brand-font" style="margin-bottom: 0.5rem; font-size: 1.5rem;">Kosongkan Database?</h2>
-                <p class="text-muted text-sm">Tindakan ini akan <b>menghapus seluruh data usaha</b> yang ada di Firebase Anda secara permanen. Lakukan ini jika Anda ingin mengatasi data duplikat dengan cara meng-upload ulang dari awal.</p>
-            </div>
-            <div class="modal-footer" style="justify-content: center; background: transparent; border-top: none; padding-bottom: 2rem;">
-                <button class="btn btn-outline" onclick="tutupModalHapus()">Batal</button>
-                <button class="btn btn-danger" id="btn-konfirmasi-hapus" onclick="eksekusiHapusSemua()">Ya, Hapus Semua</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Container Notifikasi -->
     <div id="toast-container"></div>
 
@@ -740,7 +720,8 @@
         const db = getFirestore(app);
         const auth = getAuth(app); 
 
-        const NAMA_KOLEKSI = "usaha_lampung"; 
+        // KEMBALI MENGGUNAKAN KOLEKSI "perusahaan" AGAR DATA LAMA ANDA TERBACA
+        const NAMA_KOLEKSI = "perusahaan"; 
         
         let isUserLoggedIn = false;
 
@@ -869,7 +850,7 @@
                 const el = document.createElement('div');
                 el.className = 'result-item';
                 
-                // Tambahkan kolom Kontak Person di Verifikasi Box
+                // Form Verifikasi lengkap dengan Kontak Person
                 el.innerHTML = `
                     <!-- Kiri: Info Usaha -->
                     <div class="company-info">
@@ -992,73 +973,6 @@
                 toast("Gagal menambahkan usaha.", "error");
             } finally {
                 btn.innerHTML = 'Simpan Data';
-                btn.disabled = false;
-            }
-        };
-
-        // ---------------------------------------------------------
-        // FUNGSI HAPUS SEMUA DATA (KOSONGKAN DATABASE)
-        // ---------------------------------------------------------
-        window.bukaModalHapus = () => document.getElementById('modal-hapus').classList.add('active');
-        window.tutupModalHapus = () => document.getElementById('modal-hapus').classList.remove('active');
-
-        window.eksekusiHapusSemua = async function() {
-            const btn = document.getElementById('btn-konfirmasi-hapus');
-            const oriText = btn.innerHTML;
-            
-            btn.innerHTML = '<span class="loader-spinner"></span> Menghapus...';
-            btn.disabled = true;
-            
-            toast("Proses penghapusan dimulai. Tolong jangan tutup halaman ini...", "warning");
-
-            try {
-                const perusahaanRef = collection(db, NAMA_KOLEKSI);
-                const q = query(perusahaanRef);
-                const snapshot = await getDocs(q);
-
-                if (snapshot.empty) {
-                    toast("Database memang sudah kosong.", "info");
-                    window.tutupModalHapus();
-                    return;
-                }
-
-                let batch = writeBatch(db);
-                let hitung = 0;
-                let totalHapus = 0;
-
-                for (const documentSnapshot of snapshot.docs) {
-                    batch.delete(documentSnapshot.ref);
-                    hitung++;
-                    totalHapus++;
-
-                    if (hitung >= 490) {
-                        await batch.commit();
-                        batch = writeBatch(db);
-                        hitung = 0;
-                    }
-                }
-
-                if (hitung > 0) {
-                    await batch.commit();
-                }
-
-                toast(`Sukses! ${totalHapus} data berhasil dihapus dari database.`, "success");
-                
-                document.getElementById('list-usaha').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon"><i class="fas fa-trash-alt text-muted"></i></div>
-                        <h3 class="brand-font">Database Kosong</h3>
-                        <p>Seluruh data usaha telah dihapus. Silakan lakukan upload Excel kembali.</p>
-                    </div>`;
-                document.getElementById('jumlah-hasil').innerText = "0 hasil";
-                
-                window.tutupModalHapus();
-
-            } catch (error) {
-                console.error("Gagal menghapus data:", error);
-                toast("Terjadi kesalahan saat menghapus data. Periksa koneksi internet.", "error");
-            } finally {
-                btn.innerHTML = oriText;
                 btn.disabled = false;
             }
         };
@@ -1190,6 +1104,8 @@
                 setTimeout(() => el.remove(), 300);
             }, 4500);
         };
+
+        window.switchTab = function(type) { /* obsolete di desain baru */ };
 
     </script>
 </body>
