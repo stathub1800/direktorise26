@@ -1338,7 +1338,7 @@
                 style="resize:vertical" placeholder="Jalan, desa/kelurahan, kecamatan…"></textarea>
         </div>
         <div class="mfield">
-            <label class="mfield-label">Alamat Email Usaha *</label>
+            <label class="mfield-label">Email *</label>
             <input type="email" id="tambah-email" class="mfield-input" placeholder="email@perusahaan.com">
         </div>
 
@@ -1357,10 +1357,6 @@
                 <label class="mfield-label">No. Telepon / WA *</label>
                 <input type="tel" id="tambah-kontak-telp" class="mfield-input" placeholder="08xx-xxxx-xxxx">
             </div>
-        </div>
-        <div class="mfield">
-            <label class="mfield-label">Email Kontak Person</label>
-            <input type="email" id="tambah-kontak-email" class="mfield-input" placeholder="email.pic@perusahaan.com (opsional)">
         </div>
 
     </div>
@@ -1404,7 +1400,7 @@
         <div class="template-note">
             <strong><i class="fas fa-lightbulb"></i> Kolom wajib dalam template:</strong><br>
             <code>NIB</code> · <code>Nama Usaha</code> · <code>Nama Komersil</code> · <code>Kabupaten/Kota</code> · <code>Alamat</code> · <code>Email</code> ·
-            <code>Nama Kontak</code> · <code>Jabatan Kontak</code> · <code>Telp Kontak</code> · <code>Email Kontak</code><br><br>
+            <code>Nama Kontak</code> · <code>Jabatan Kontak</code> · <code>Telp Kontak</code><br><br>
             Belum punya template? <a href="#" onclick="downloadTemplate();return false;" style="color:var(--orange-700);font-weight:600">Unduh di sini</a>.
         </div>
     </div>
@@ -1425,12 +1421,12 @@ import {
 
 // ─── ⬇️ PASTE FIREBASE CONFIG ANDA DI SINI ───
 const firebaseConfig = {
-    apiKey: "AIzaSyDT3VUNM6LZYZItOtuyItqXYVvG6J8fx-s",
-  authDomain: "se2026-f3003.firebaseapp.com",
-  projectId: "se2026-f3003",
-  storageBucket: "se2026-f3003.firebasestorage.app",
-  messagingSenderId: "80341327498",
-  appId: "1:80341327498:web:0cf9a854246eb784be5773"
+    apiKey: "API_KEY_ANDA",
+    authDomain: "PROJECT_ID.firebaseapp.com",
+    projectId: "PROJECT_ID",
+    storageBucket: "PROJECT_ID.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -1583,15 +1579,11 @@ function buildCard(item) {
                 <div class="contact-label">No. Telepon / WA</div>
                 <div class="contact-value">${esc(item.kontakTelp||'—')}</div>
             </div>
-            <div>
-                <div class="contact-label">Email Kontak</div>
-                <div class="contact-value">${esc(item.kontakEmail||'—')}</div>
-            </div>
         </div>
 
-        <!-- Email Usaha -->
+        <!-- Email -->
         <div class="email-section ${hasEmail ? 'has-email' : ''}" id="email-sec-${item.id}">
-            <div class="email-sec-label"><i class="fas fa-envelope"></i> Email Usaha</div>
+            <div class="email-sec-label"><i class="fas fa-envelope"></i> Email</div>
             ${hasEmail
                 ? `<div class="email-value">${esc(item.email)}</div>`
                 : `<div class="email-missing">Belum diisi — klik tombol di bawah untuk melengkapi</div>`}
@@ -1615,9 +1607,6 @@ function buildCard(item) {
                     style="min-width:0">
                 <input type="tel" class="email-edit-input" id="edit-kt-${item.id}"
                     placeholder="No. Telp / WA" value="${esc(item.kontakTelp||'')}"
-                    style="min-width:0">
-                <input type="email" class="email-edit-input" id="edit-ke-${item.id}"
-                    placeholder="Email kontak (opsional)" value="${esc(item.kontakEmail||'')}"
                     style="min-width:0">
             </div>
         </div>
@@ -1655,41 +1644,35 @@ window.simpanKontak = async function(id) {
     const kn     = document.getElementById(`edit-kn-${id}`).value.trim();
     const kj     = document.getElementById(`edit-kj-${id}`).value.trim();
     const kt     = document.getElementById(`edit-kt-${id}`).value.trim();
-    const ke     = document.getElementById(`edit-ke-${id}`).value.trim();
 
-    if (email && !email.includes('@')) { toast('Format email usaha tidak valid.', 'warning'); return; }
+    if (!email || !email.includes('@')) { toast('Email wajib diisi dengan format yang valid.', 'warning'); return; }
     if (!kn || !kt) { toast('Nama dan No. Telepon kontak wajib diisi.', 'warning'); return; }
 
     try {
-        const payload = { kontakNama: kn, kontakJabatan: kj, kontakTelp: kt, kontakEmail: ke };
-        if (email) payload.email = email;
+        const payload = { email, kontakNama: kn, kontakJabatan: kj, kontakTelp: kt };
         await updateDoc(doc(db, COL, id), payload);
 
         // Update local state
         const item = allResults.find(r => r.id === id);
         if (item) Object.assign(item, payload);
 
-        // Refresh UI
+        // Refresh UI email section
         const sec = document.getElementById(`email-sec-${id}`);
-        if (email) {
-            sec.classList.add('has-email');
-            sec.innerHTML = `<div class="email-sec-label"><i class="fas fa-envelope"></i> Email Usaha</div>
-                             <div class="email-value">${esc(email)}</div>`;
-        }
+        sec.classList.add('has-email');
+        sec.innerHTML = `<div class="email-sec-label"><i class="fas fa-envelope"></i> Email</div>
+                         <div class="email-value">${esc(email)}</div>`;
 
+        // Refresh kontak section
         const kSec = document.getElementById(`kontak-sec-${id}`);
-        kSec.querySelector('[style*="Nama"] + .contact-value, .contact-value')
         kSec.innerHTML = `
             <div class="contact-header"><i class="fas fa-user-tie"></i> Kontak Person</div>
             <div><div class="contact-label">Nama</div><div class="contact-value">${esc(kn)}</div></div>
             <div><div class="contact-label">Jabatan</div><div class="contact-value">${esc(kj||'—')}</div></div>
             <div><div class="contact-label">No. Telepon / WA</div><div class="contact-value">${esc(kt)}</div></div>
-            <div><div class="contact-label">Email Kontak</div><div class="contact-value">${esc(ke||'—')}</div></div>
         `;
 
         window.toggleEdit(id, false);
-        const btnEdit = document.getElementById(`btn-edit-${id}`);
-        btnEdit.innerHTML = '<i class="fas fa-pen"></i> Ubah Email &amp; Kontak';
+        document.getElementById(`btn-edit-${id}`).innerHTML = '<i class="fas fa-pen"></i> Ubah Email &amp; Kontak';
 
         loadStats();
         toast('Data berhasil disimpan!', 'success');
@@ -1757,23 +1740,22 @@ window.simpanUsahaBaru = async function() {
     const kNama  = document.getElementById('tambah-kontak-nama').value.trim();
     const kJab   = document.getElementById('tambah-kontak-jabatan').value.trim();
     const kTelp  = document.getElementById('tambah-kontak-telp').value.trim();
-    const kEmail = document.getElementById('tambah-kontak-email').value.trim();
 
     if (!nib||!nama||!kab||!alamat||!email||!kNama||!kTelp) {
         toast('Kolom bertanda * wajib diisi.', 'warning'); return;
     }
-    if (!email.includes('@')) { toast('Format email usaha tidak valid.', 'warning'); return; }
+    if (!email.includes('@')) { toast('Format email tidak valid.', 'warning'); return; }
 
     try {
         await addDoc(collection(db, COL), {
             nib, namaUsaha: nama, namaKomersil: kom||nama,
             prov: 'Lampung', kabkot: kab, alamat, email,
-            kontakNama: kNama, kontakJabatan: kJab, kontakTelp: kTelp, kontakEmail: kEmail,
+            kontakNama: kNama, kontakJabatan: kJab, kontakTelp: kTelp,
             createdAt: new Date().toISOString()
         });
         tutupModal('modal-tambah');
         ['tambah-nib','tambah-nama','tambah-komersil','tambah-alamat','tambah-email',
-         'tambah-kontak-nama','tambah-kontak-jabatan','tambah-kontak-telp','tambah-kontak-email']
+         'tambah-kontak-nama','tambah-kontak-jabatan','tambah-kontak-telp']
             .forEach(id => { document.getElementById(id).value = ''; });
         document.getElementById('tambah-kab').value = '';
         loadStats();
@@ -1829,7 +1811,6 @@ function prosesFile(file) {
                     kontakNama:    String(row['Nama Kontak']||'').trim(),
                     kontakJabatan: String(row['Jabatan Kontak']||'').trim(),
                     kontakTelp:    String(row['Telp Kontak']||'').trim(),
-                    kontakEmail:   String(row['Email Kontak']||'').trim(),
                     createdAt:     new Date().toISOString()
                 });
             });
@@ -1848,9 +1829,9 @@ function prosesFile(file) {
 // ─── DOWNLOAD TEMPLATE ───
 window.downloadTemplate = function() {
     const headers = [['NIB','Nama Usaha','Nama Komersil','Kabupaten/Kota','Alamat','Email',
-                       'Nama Kontak','Jabatan Kontak','Telp Kontak','Email Kontak']];
+                       'Nama Kontak','Jabatan Kontak','Telp Kontak']];
     const ws = XLSX.utils.aoa_to_sheet(headers);
-    ws['!cols'] = [{wch:20},{wch:40},{wch:40},{wch:22},{wch:50},{wch:35},{wch:30},{wch:25},{wch:20},{wch:35}];
+    ws['!cols'] = [{wch:20},{wch:40},{wch:40},{wch:22},{wch:50},{wch:35},{wch:30},{wch:25},{wch:20}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Template');
     XLSX.writeFile(wb, 'Template_Upload_Usaha_SE2026.xlsx');
