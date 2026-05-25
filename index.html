@@ -5,1332 +5,1468 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verifikasi Email Usaha — Sensus Ekonomi 2026</title>
 
-    <!-- Fonts: Cormorant Garamond (display formal) + IBM Plex Sans (body institutional) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- SheetJS untuk baca & generate Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        /* ============================================
-           DESIGN TOKENS — SE2026 Orange-White Theme
-        ============================================ */
-        :root {
-            --orange-50:  #fff7ed;
-            --orange-100: #ffedd5;
-            --orange-200: #fed7aa;
-            --orange-400: #fb923c;
-            --orange-500: #f97316;
-            --orange-600: #ea580c;
-            --orange-700: #c2410c;
-            --orange-800: #9a3412;
-            --slate-50:   #f8fafc;
-            --slate-100:  #f1f5f9;
-            --slate-200:  #e2e8f0;
-            --slate-300:  #cbd5e1;
-            --slate-400:  #94a3b8;
-            --slate-500:  #64748b;
-            --slate-600:  #475569;
-            --slate-700:  #334155;
-            --slate-800:  #1e293b;
-            --slate-900:  #0f172a;
-            --white:      #ffffff;
-            --success:    #16a34a;
-            --error:      #dc2626;
+    /* ═══════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════ */
+    :root {
+        --orange-50:  #fff7ed;
+        --orange-100: #ffedd5;
+        --orange-200: #fed7aa;
+        --orange-300: #fdba74;
+        --orange-400: #fb923c;
+        --orange-500: #f97316;
+        --orange-600: #ea580c;
+        --orange-700: #c2410c;
+        --orange-800: #9a3412;
 
-            --font-display: 'Cormorant Garamond', Georgia, serif;
-            --font-body:    'IBM Plex Sans', 'Segoe UI', sans-serif;
+        --slate-50:  #f8fafc;
+        --slate-100: #f1f5f9;
+        --slate-200: #e2e8f0;
+        --slate-300: #cbd5e1;
+        --slate-400: #94a3b8;
+        --slate-500: #64748b;
+        --slate-600: #475569;
+        --slate-700: #334155;
+        --slate-800: #1e293b;
+        --slate-900: #0f172a;
+        --white:     #ffffff;
+        --success:   #15803d;
+        --error:     #dc2626;
 
-            --tracking-wide:  0.06em;
-            --tracking-wider: 0.12em;
-            --tracking-tight: -0.015em;
+        --font-display: 'Cormorant Garamond', Georgia, serif;
+        --font-body:    'IBM Plex Sans', 'Segoe UI', sans-serif;
 
-            --radius-sm:  4px;
-            --radius-md:  10px;
-            --radius-lg:  16px;
-            --radius-xl:  22px;
+        --r-xs:  3px;
+        --r-sm:  6px;
+        --r-md:  10px;
+        --r-lg:  16px;
+        --r-xl:  20px;
 
-            --shadow-sm:  0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-            --shadow-md:  0 4px 16px rgba(0,0,0,.08);
-            --shadow-lg:  0 12px 40px rgba(0,0,0,.12);
-            --shadow-orange: 0 8px 32px rgba(249,115,22,.25);
-        }
+        --sh-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+        --sh-md: 0 4px 20px rgba(0,0,0,.07);
+        --sh-lg: 0 16px 48px rgba(0,0,0,.11);
+        --sh-or: 0 6px 28px rgba(234,88,12,.2);
 
-        /* ============================================
-           RESET & BASE
-        ============================================ */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        --sidebar-w: 310px;
+        --topbar-h:  60px;
+    }
 
-        body {
-            font-family: var(--font-body);
-            font-size: 14.5px;
-            font-weight: 400;
-            line-height: 1.65;
-            background: var(--slate-50);
-            color: var(--slate-800);
-            min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ============================================
-           BACKGROUND — Subtle geometric pattern
-        ============================================ */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(ellipse 80% 50% at 15% 10%, rgba(249,115,22,.06) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(249,115,22,.04) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
-        }
+    body {
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.65;
+        background: var(--slate-100);
+        color: var(--slate-800);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+    }
 
-        /* Geometric dots pattern */
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: radial-gradient(circle, rgba(249,115,22,.08) 1px, transparent 1px);
-            background-size: 32px 32px;
-            pointer-events: none;
-            z-index: 0;
-        }
+    /* ═══════════════════════════════════════════
+       APP SHELL — fixed topbar + sidebar + main
+    ═══════════════════════════════════════════ */
 
-        .app-wrapper {
-            position: relative;
-            z-index: 1;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 32px 20px 60px;
-        }
+    /* ── TOP BAR ── */
+    .topbar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: var(--topbar-h);
+        background: var(--orange-600);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px 0 20px;
+        z-index: 200;
+        box-shadow: 0 2px 12px rgba(234,88,12,.35);
+    }
 
-        /* ============================================
-           HEADER
-        ============================================ */
-        .header {
-            background: linear-gradient(135deg, var(--orange-600) 0%, var(--orange-500) 50%, var(--orange-400) 100%);
-            border-radius: var(--radius-xl);
-            padding: 36px 40px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 28px;
-            box-shadow: var(--shadow-orange);
-        }
+    .topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .topbar-logo {
+        width: 36px; height: 36px;
+        background: white;
+        border-radius: var(--r-sm);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--orange-600);
+        font-size: 16px;
+        font-weight: 700;
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+    .topbar-title {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+    .topbar-title span:first-child {
+        font-family: var(--font-display);
+        font-size: 20px;
+        font-weight: 600;
+        color: white;
+        line-height: 1;
+    }
+    .topbar-title span:last-child {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.75);
+        line-height: 1;
+    }
 
-        /* Decorative rings */
-        .header::before {
-            content: '';
-            position: absolute;
-            width: 380px;
-            height: 380px;
-            border-radius: 50%;
-            border: 60px solid rgba(255,255,255,.07);
-            right: -120px;
-            top: -100px;
-        }
-        .header::after {
-            content: '';
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            border: 40px solid rgba(255,255,255,.06);
-            right: 80px;
-            bottom: -80px;
-        }
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .topbar-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: var(--r-xs);
+        padding: 5px 12px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: white;
+        letter-spacing: 0.03em;
+    }
+    .topbar-badge i { font-size: 10px; opacity: .8; }
 
-        .header-inner { position: relative; z-index: 1; }
+    /* ── SIDEBAR ── */
+    .sidebar {
+        position: fixed;
+        top: var(--topbar-h);
+        left: 0;
+        bottom: 0;
+        width: var(--sidebar-w);
+        background: var(--white);
+        border-right: 1px solid var(--slate-200);
+        overflow-y: auto;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+    }
+    /* subtle orange line at top of sidebar */
+    .sidebar::before {
+        content: '';
+        display: block;
+        height: 3px;
+        background: linear-gradient(90deg, var(--orange-500), var(--orange-300));
+        flex-shrink: 0;
+    }
 
-        .header-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,.15);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,.28);
-            border-radius: 3px;
-            padding: 6px 16px;
-            font-family: var(--font-body);
-            font-size: 10.5px;
-            font-weight: 600;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-        .header-badge i { font-size: 10px; }
+    .sidebar-section {
+        padding: 20px 20px 0;
+    }
+    .sidebar-section:last-child { padding-bottom: 24px; }
 
-        .header h1 {
-            font-family: var(--font-display);
-            font-size: clamp(26px, 4.5vw, 38px);
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            line-height: 1.12;
-            margin-bottom: 12px;
-        }
+    .sidebar-divider {
+        height: 1px;
+        background: var(--slate-100);
+        margin: 18px 20px;
+    }
 
-        .header p {
-            font-size: 14px;
-            font-weight: 300;
-            letter-spacing: 0.01em;
-            opacity: .9;
-            line-height: 1.7;
-            max-width: 520px;
-        }
+    .sidebar-label {
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: 12px;
+    }
 
-        /* Stats bar */
-        .header-stats {
-            display: flex;
-            gap: 24px;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,.2);
-            flex-wrap: wrap;
-        }
-        .stat-item { display: flex; flex-direction: column; gap: 3px; }
-        .stat-value {
-            font-family: var(--font-display);
-            font-size: 26px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            line-height: 1;
-        }
-        .stat-label {
-            font-size: 10.5px;
-            font-weight: 500;
-            opacity: .72;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+    /* Stats in sidebar */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+    .stat-card {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--r-md);
+        padding: 12px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .stat-card.accent {
+        background: var(--orange-50);
+        border-color: var(--orange-200);
+    }
+    .stat-card .sv {
+        font-family: var(--font-display);
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--slate-900);
+        letter-spacing: -0.01em;
+        line-height: 1;
+    }
+    .stat-card.accent .sv { color: var(--orange-700); }
+    .stat-card .sl {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+    }
+    .stat-card.accent .sl { color: var(--orange-500); }
 
-        /* ============================================
-           INFO STRIP — Cara kerja app
-        ============================================ */
-        .info-strip {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 28px;
-        }
-        .info-card {
-            background: var(--white);
-            border: 1px solid var(--slate-200);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            box-shadow: var(--shadow-sm);
-        }
-        .info-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-sm);
-            background: var(--orange-100);
-            color: var(--orange-600);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        .info-card h4 {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            color: var(--slate-700);
-            margin-bottom: 4px;
-        }
-        .info-card p  {
-            font-size: 12px;
-            font-weight: 300;
-            color: var(--slate-500);
-            line-height: 1.55;
-        }
+    /* Search tab pills in sidebar */
+    .search-tabs {
+        display: flex;
+        background: var(--slate-100);
+        border-radius: var(--r-sm);
+        padding: 3px;
+        margin-bottom: 14px;
+    }
+    .search-tab {
+        flex: 1;
+        padding: 8px 10px;
+        border: none;
+        border-radius: var(--r-xs);
+        background: transparent;
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--slate-500);
+        cursor: pointer;
+        transition: all .2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .search-tab.active {
+        background: var(--white);
+        color: var(--orange-600);
+        font-weight: 600;
+        box-shadow: var(--sh-sm);
+    }
 
-        /* ============================================
-           SEARCH CARD
-        ============================================ */
-        .search-card {
-            background: var(--white);
-            border: 1px solid var(--slate-200);
-            border-radius: var(--radius-xl);
-            padding: 28px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-md);
-        }
+    /* Form elements in sidebar */
+    .field { margin-bottom: 12px; }
+    .field-label {
+        display: block;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin-bottom: 5px;
+    }
+    .field-wrap { position: relative; }
+    .field-wrap .fi {
+        position: absolute;
+        left: 11px; top: 50%;
+        transform: translateY(-50%);
+        color: var(--slate-400);
+        font-size: 12px;
+        pointer-events: none;
+    }
+    .fi-top {
+        position: absolute;
+        left: 11px; top: 11px;
+        color: var(--slate-400);
+        font-size: 12px;
+        pointer-events: none;
+    }
+    .field-input {
+        width: 100%;
+        padding: 9px 12px 9px 34px;
+        border: 1.5px solid var(--slate-200);
+        border-radius: var(--r-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--slate-800);
+        background: var(--slate-50);
+        outline: none;
+        transition: all .18s;
+    }
+    .field-input:focus {
+        border-color: var(--orange-400);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(249,115,22,.08);
+    }
+    .field-input::placeholder {
+        color: var(--slate-400);
+        font-weight: 300;
+        font-style: italic;
+    }
+    .field-select {
+        width: 100%;
+        padding: 9px 34px 9px 34px;
+        border: 1.5px solid var(--slate-200);
+        border-radius: var(--r-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--slate-800);
+        background: var(--slate-50);
+        outline: none;
+        appearance: none;
+        cursor: pointer;
+        transition: all .18s;
+    }
+    .field-select:focus {
+        border-color: var(--orange-400);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(249,115,22,.08);
+    }
+    .field-chevron {
+        position: absolute;
+        right: 10px; top: 50%;
+        transform: translateY(-50%);
+        color: var(--slate-400);
+        font-size: 10px;
+        pointer-events: none;
+    }
+    .field-input-plain {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid var(--slate-200);
+        border-radius: var(--r-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--slate-800);
+        background: var(--slate-50);
+        outline: none;
+        transition: all .18s;
+    }
+    .field-input-plain:focus {
+        border-color: var(--orange-400);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(249,115,22,.08);
+    }
 
-        .section-label {
-            font-family: var(--font-body);
-            font-size: 10.5px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.13em;
-            color: var(--orange-600);
-            margin-bottom: 18px;
-        }
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 18px;
+        border: none;
+        border-radius: var(--r-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition: all .18s;
+        white-space: nowrap;
+    }
+    .btn-primary {
+        background: var(--orange-500);
+        color: white;
+        box-shadow: 0 3px 10px rgba(249,115,22,.28);
+        width: 100%;
+    }
+    .btn-primary:hover { background: var(--orange-600); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
 
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: var(--slate-100);
-            padding: 4px;
-            border-radius: var(--radius-md);
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: var(--radius-sm);
-            border: none;
-            cursor: pointer;
-            font-family: var(--font-body);
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-            transition: all .2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: var(--slate-500);
-            background: transparent;
-        }
-        .tab-btn.active {
-            background: var(--white);
-            color: var(--orange-600);
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-        }
-        .tab-btn:hover:not(.active) { color: var(--slate-700); }
+    .btn-outline {
+        background: var(--white);
+        color: var(--slate-600);
+        border: 1.5px solid var(--slate-200);
+        width: 100%;
+    }
+    .btn-outline:hover { border-color: var(--orange-300); color: var(--orange-600); background: var(--orange-50); }
 
-        /* Input Group */
-        .input-group { position: relative; margin-bottom: 12px; }
-        .input-group .input-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--slate-400);
-            font-size: 14px;
-            pointer-events: none;
-        }
-        .form-input {
+    .btn-success-outline {
+        background: white;
+        color: var(--success);
+        border: 1.5px solid #bbf7d0;
+        width: 100%;
+    }
+    .btn-success-outline:hover { background: #f0fdf4; }
+
+    .btn-ghost {
+        background: transparent;
+        color: var(--slate-500);
+        font-size: 12.5px;
+        padding: 6px 0;
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+    .btn-ghost:hover { color: var(--orange-600); }
+
+    /* Inline small buttons (for result cards) */
+    .btn-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border: none;
+        border-radius: var(--r-xs);
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition: all .18s;
+    }
+    .btn-inline-primary { background: var(--orange-500); color: white; box-shadow: 0 2px 8px rgba(249,115,22,.25); }
+    .btn-inline-primary:hover { background: var(--orange-600); }
+    .btn-inline-secondary { background: var(--slate-100); color: var(--slate-600); border: 1px solid var(--slate-200); }
+    .btn-inline-secondary:hover { border-color: var(--slate-300); color: var(--slate-700); }
+
+    /* Petugas section */
+    .petugas-section {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    /* How-to steps in sidebar */
+    .how-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .how-step {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .how-num {
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        background: var(--orange-100);
+        color: var(--orange-700);
+        font-size: 11px;
+        font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .how-text h5 {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--slate-700);
+        margin-bottom: 1px;
+    }
+    .how-text p {
+        font-size: 11.5px;
+        font-weight: 300;
+        color: var(--slate-500);
+        line-height: 1.5;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+        margin-left: var(--sidebar-w);
+        padding-top: var(--topbar-h);
+        min-height: 100vh;
+    }
+
+    .main-inner {
+        padding: 28px 32px 60px;
+        max-width: 860px;
+    }
+
+    /* Page heading */
+    .page-heading {
+        margin-bottom: 24px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--slate-200);
+    }
+    .page-heading h2 {
+        font-family: var(--font-display);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        color: var(--slate-900);
+        line-height: 1.15;
+        margin-bottom: 5px;
+    }
+    .page-heading p {
+        font-size: 13.5px;
+        font-weight: 300;
+        color: var(--slate-500);
+        line-height: 1.6;
+    }
+
+    /* Results header */
+    .results-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .results-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--orange-100);
+        color: var(--orange-700);
+        padding: 5px 12px;
+        border-radius: var(--r-xs);
+        font-size: 11.5px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    .results-page-info {
+        font-size: 12px;
+        color: var(--slate-400);
+        font-weight: 300;
+    }
+
+    /* ── RESULT CARD ── */
+    .result-card {
+        background: var(--white);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--r-lg);
+        padding: 20px 22px;
+        margin-bottom: 10px;
+        box-shadow: var(--sh-sm);
+        transition: all .2s ease;
+        animation: cardIn .25s ease both;
+    }
+    .result-card:hover {
+        border-color: var(--orange-300);
+        box-shadow: 0 4px 20px rgba(249,115,22,.1);
+    }
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card header row */
+    .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+    .card-name {
+        font-family: var(--font-display);
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--slate-900);
+        line-height: 1.2;
+        margin-bottom: 3px;
+    }
+    .card-komersil {
+        font-size: 12px;
+        font-weight: 400;
+        font-style: italic;
+        color: var(--slate-400);
+        margin-bottom: 8px;
+    }
+    .card-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: var(--r-xs);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+    .badge-orange { background: var(--orange-100); color: var(--orange-700); }
+    .badge-slate  { background: var(--slate-100);  color: var(--slate-600);  }
+    .badge-green  { background: #dcfce7; color: #166534; }
+    .badge-yellow { background: #fef9c3; color: #854d0e; }
+
+    /* Card meta grid */
+    .card-divider { border: none; border-top: 1px solid var(--slate-100); margin: 12px 0; }
+
+    .card-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .meta-label {
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+    }
+    .meta-value {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--slate-700);
+        line-height: 1.4;
+    }
+
+    /* Contact person block inside card */
+    .card-contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 12px 14px;
+        background: #f8fafc;
+        border-radius: var(--r-sm);
+        border: 1px solid var(--slate-200);
+        margin-bottom: 12px;
+    }
+    .contact-label {
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: 2px;
+    }
+    .contact-value {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--slate-700);
+    }
+    .contact-header {
+        grid-column: 1 / -1;
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--orange-600);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--slate-200);
+    }
+
+    /* Email section */
+    .email-section {
+        padding: 11px 14px;
+        border-radius: var(--r-sm);
+        border: 1.5px dashed var(--slate-200);
+        background: var(--slate-50);
+        margin-bottom: 12px;
+    }
+    .email-section.has-email { border-color: #86efac; background: #f0fdf4; }
+    .email-sec-label {
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .email-value {
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        color: var(--success);
+    }
+    .email-missing {
+        font-size: 12.5px;
+        font-weight: 300;
+        font-style: italic;
+        color: var(--slate-400);
+    }
+
+    /* Inline email edit */
+    .email-edit-form {
+        display: none;
+        margin-top: 8px;
+        gap: 7px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .email-edit-form.show { display: flex; }
+    .email-edit-input {
+        flex: 1;
+        min-width: 200px;
+        padding: 7px 12px;
+        border: 1.5px solid var(--orange-300);
+        border-radius: var(--r-xs);
+        font-family: var(--font-body);
+        font-size: 13px;
+        outline: none;
+        background: white;
+    }
+    .email-edit-input:focus {
+        border-color: var(--orange-500);
+        box-shadow: 0 0 0 3px rgba(249,115,22,.08);
+    }
+
+    .card-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+
+    /* ── STATE BOXES ── */
+    .state-box {
+        background: var(--white);
+        border: 1.5px dashed var(--slate-200);
+        border-radius: var(--r-lg);
+        padding: 56px 24px;
+        text-align: center;
+    }
+    .state-icon {
+        width: 56px; height: 56px;
+        border-radius: 50%;
+        background: var(--orange-100);
+        color: var(--orange-500);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px;
+        margin: 0 auto 16px;
+    }
+    .state-box h3 {
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--slate-700);
+        margin-bottom: 7px;
+    }
+    .state-box p {
+        font-size: 13px;
+        font-weight: 300;
+        color: var(--slate-500);
+        line-height: 1.65;
+    }
+
+    .spinner {
+        width: 34px; height: 34px;
+        border: 3px solid var(--orange-100);
+        border-top-color: var(--orange-500);
+        border-radius: 50%;
+        animation: spin .7s linear infinite;
+        margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── PAGINATION ── */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    .page-btn {
+        min-width: 34px; height: 34px;
+        padding: 0 9px;
+        border: 1.5px solid var(--slate-200);
+        border-radius: var(--r-xs);
+        background: var(--white);
+        color: var(--slate-600);
+        font-family: var(--font-body);
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all .18s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--orange-400); color: var(--orange-600); }
+    .page-btn.active { background: var(--orange-500); color: white; border-color: var(--orange-500); }
+    .page-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,.48);
+        backdrop-filter: blur(4px);
+        z-index: 500;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+        background: var(--white);
+        border-radius: var(--r-xl);
+        width: 100%;
+        max-width: 540px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--sh-lg);
+        animation: modalIn .22s ease;
+    }
+    @keyframes modalIn {
+        from { opacity: 0; transform: scale(.96) translateY(8px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+        padding: 22px 26px 18px;
+        border-bottom: 1px solid var(--slate-100);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 1;
+    }
+    .modal-header h2 {
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--slate-900);
+    }
+    .modal-close {
+        width: 30px; height: 30px;
+        border-radius: var(--r-xs);
+        border: none;
+        background: var(--slate-100);
+        color: var(--slate-500);
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px;
+        transition: all .18s;
+        flex-shrink: 0;
+    }
+    .modal-close:hover { background: #fee2e2; color: var(--error); }
+
+    .modal-body { padding: 22px 26px; }
+    .modal-footer {
+        padding: 14px 26px 22px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 9px;
+        border-top: 1px solid var(--slate-100);
+    }
+
+    /* Modal form fields */
+    .mfield { margin-bottom: 14px; }
+    .mfield:last-child { margin-bottom: 0; }
+    .mfield-label {
+        display: block;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin-bottom: 5px;
+    }
+    .mfield-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .mfield-input {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid var(--slate-200);
+        border-radius: var(--r-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--slate-800);
+        background: var(--slate-50);
+        outline: none;
+        transition: all .18s;
+    }
+    .mfield-input:focus {
+        border-color: var(--orange-400);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(249,115,22,.08);
+    }
+    .mfield-input::placeholder { color: var(--slate-400); font-weight: 300; font-style: italic; }
+    .mfield-readonly {
+        padding: 9px 12px;
+        background: var(--slate-100);
+        border: 1.5px solid var(--slate-200);
+        border-radius: var(--r-sm);
+        font-size: 13px;
+        color: var(--slate-500);
+    }
+    .mfield-select {
+        width: 100%;
+        padding: 9px 30px 9px 12px;
+        border: 1.5px solid var(--slate-200);
+        border-radius: var(--r-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--slate-800);
+        background: var(--slate-50);
+        outline: none;
+        appearance: none;
+        cursor: pointer;
+        transition: all .18s;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+    }
+    .mfield-select:focus {
+        border-color: var(--orange-400);
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(249,115,22,.08);
+    }
+    .mfield-group-title {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--orange-600);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 0 8px;
+        border-top: 1px solid var(--slate-100);
+        margin-top: 4px;
+        margin-bottom: 10px;
+    }
+    .mfield-group-title:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+
+    .modal-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 20px;
+        border: none;
+        border-radius: var(--r-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition: all .18s;
+    }
+    .modal-btn-primary { background: var(--orange-500); color: white; box-shadow: 0 3px 10px rgba(249,115,22,.25); }
+    .modal-btn-primary:hover { background: var(--orange-600); }
+    .modal-btn-secondary { background: var(--slate-100); color: var(--slate-600); }
+    .modal-btn-secondary:hover { background: var(--slate-200); }
+
+    /* Upload */
+    .upload-area {
+        border: 2px dashed var(--slate-200);
+        border-radius: var(--r-md);
+        padding: 28px;
+        text-align: center;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .upload-area:hover, .upload-area.drag-over {
+        border-color: var(--orange-400);
+        background: var(--orange-50);
+    }
+    .upload-icon {
+        width: 48px; height: 48px;
+        border-radius: var(--r-md);
+        background: var(--orange-100);
+        color: var(--orange-600);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px;
+        margin: 0 auto 10px;
+    }
+    .upload-area h4 {
+        font-family: var(--font-display);
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--slate-700);
+        margin-bottom: 4px;
+    }
+    .upload-area p {
+        font-size: 12px;
+        font-weight: 300;
+        color: var(--slate-400);
+        line-height: 1.55;
+    }
+    .upload-hint {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--orange-600);
+        margin-top: 7px;
+    }
+
+    .progress-wrap { display: none; margin-top: 14px; }
+    .progress-wrap.show { display: block; }
+    .progress-label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--slate-600);
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .progress-track { height: 7px; background: var(--slate-100); border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--orange-600), var(--orange-400));
+        border-radius: 999px;
+        transition: width .3s ease;
+    }
+
+    .template-note {
+        background: var(--orange-50);
+        border: 1px solid var(--orange-200);
+        border-radius: var(--r-md);
+        padding: 12px 14px;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.65;
+        color: var(--orange-800);
+        margin-top: 12px;
+    }
+    .template-note strong { font-weight: 600; }
+    .template-note code {
+        background: var(--orange-100);
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 11px;
+    }
+
+    /* Toast */
+    #toast-container {
+        position: fixed;
+        top: 72px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none;
+    }
+    .toast {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        padding: 12px 16px;
+        border-radius: var(--r-md);
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.5;
+        box-shadow: var(--sh-lg);
+        min-width: 270px;
+        max-width: 360px;
+        animation: toastIn .25s ease;
+        pointer-events: all;
+    }
+    .toast-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .toast.info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .toast.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .toast.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .toast.warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    @keyframes toastIn  { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes toastOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(16px); } }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        :root { --sidebar-w: 100%; }
+        .sidebar {
+            position: static;
             width: 100%;
-            padding: 11px 16px 11px 42px;
-            border: 1.5px solid var(--slate-200);
-            border-radius: var(--radius-md);
-            font-family: var(--font-body);
-            font-size: 14px;
-            font-weight: 400;
-            letter-spacing: 0.01em;
-            color: var(--slate-800);
-            background: var(--slate-50);
-            transition: all .2s ease;
-            outline: none;
+            border-right: none;
+            border-bottom: 1px solid var(--slate-200);
         }
-        .form-input:focus {
-            border-color: var(--orange-400);
-            background: var(--white);
-            box-shadow: 0 0 0 3px rgba(249,115,22,.08);
-        }
-        .form-input::placeholder { color: var(--slate-400); font-weight: 300; font-style: italic; }
+        .main { margin-left: 0; }
+        .main-inner { padding: 20px 16px 48px; }
+        .topbar { padding: 0 16px; }
+        .card-contact-grid { grid-template-columns: 1fr; }
+    }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-        /* Kabupaten select */
-        .select-wrap { position: relative; }
-        .select-wrap .input-icon { z-index: 1; }
-        .select-wrap .chevron {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--slate-400);
-            font-size: 12px;
-            pointer-events: none;
-        }
-        .form-select {
-            width: 100%;
-            padding: 11px 40px 11px 42px;
-            border: 1.5px solid var(--slate-200);
-            border-radius: var(--radius-md);
-            font-family: var(--font-body);
-            font-size: 14px;
-            font-weight: 400;
-            letter-spacing: 0.01em;
-            color: var(--slate-800);
-            background: var(--slate-50);
-            transition: all .2s ease;
-            outline: none;
-            cursor: pointer;
-            appearance: none;
-        }
-        .form-select:focus {
-            border-color: var(--orange-400);
-            background: var(--white);
-            box-shadow: 0 0 0 3px rgba(249,115,22,.08);
-        }
-
-        /* Search footer */
-        .search-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 20px;
-            margin-top: 20px;
-            border-top: 1px solid var(--slate-100);
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .btn-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: var(--radius-md);
-            font-family: var(--font-body);
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.03em;
-            cursor: pointer;
-            border: none;
-            transition: all .2s ease;
-            white-space: nowrap;
-        }
-        .btn-primary {
-            background: var(--orange-500);
-            color: white;
-            box-shadow: 0 4px 12px rgba(249,115,22,.3);
-        }
-        .btn-primary:hover { background: var(--orange-600); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(249,115,22,.35); }
-        .btn-primary:active { transform: translateY(0); }
-
-        .btn-secondary {
-            background: var(--white);
-            color: var(--slate-600);
-            border: 1.5px solid var(--slate-200);
-        }
-        .btn-secondary:hover { border-color: var(--orange-300); color: var(--orange-600); background: var(--orange-50); }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--slate-500);
-            padding: 11px 14px;
-        }
-        .btn-ghost:hover { color: var(--orange-600); background: var(--orange-50); }
-
-        .btn-success {
-            background: #dcfce7;
-            color: var(--success);
-            border: 1.5px solid #bbf7d0;
-        }
-        .btn-success:hover { background: #bbf7d0; }
-
-        /* Divider */
-        .btn-divider { width: 1px; height: 28px; background: var(--slate-200); }
-
-        /* ============================================
-           TOAST / NOTIFICATION
-        ============================================ */
-        #toast-container {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-        .toast {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 13px 18px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            font-weight: 400;
-            letter-spacing: 0.01em;
-            line-height: 1.55;
-            box-shadow: var(--shadow-lg);
-            min-width: 280px;
-            max-width: 380px;
-            animation: toastIn .3s ease;
-            pointer-events: all;
-        }
-        .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-        .toast.info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-        .toast.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-        .toast.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-        .toast.warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes toastOut {
-            from { opacity: 1; transform: translateX(0); }
-            to   { opacity: 0; transform: translateX(20px); }
-        }
-
-        /* ============================================
-           RESULTS
-        ============================================ */
-        .results-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .results-count {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--orange-100);
-            color: var(--orange-700);
-            padding: 5px 14px;
-            border-radius: 3px;
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-
-        /* Result Card */
-        .result-card {
-            background: var(--white);
-            border: 1.5px solid var(--slate-200);
-            border-radius: var(--radius-lg);
-            padding: 20px 24px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow-sm);
-            transition: all .2s ease;
-            animation: cardIn .3s ease both;
-        }
-        .result-card:hover {
-            border-color: var(--orange-300);
-            box-shadow: 0 4px 20px rgba(249,115,22,.12);
-        }
-        @keyframes cardIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .card-left { flex: 1; min-width: 0; }
-
-        .card-name {
-            font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            color: var(--slate-900);
-            margin-bottom: 4px;
-            line-height: 1.25;
-        }
-        .card-komersil {
-            font-size: 12.5px;
-            font-weight: 400;
-            font-style: italic;
-            color: var(--slate-500);
-            margin-bottom: 10px;
-            letter-spacing: 0.01em;
-        }
-
-        .card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
-            border-radius: 3px;
-            font-size: 10.5px;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-        .badge-orange { background: var(--orange-100); color: var(--orange-700); }
-        .badge-slate  { background: var(--slate-100); color: var(--slate-600); }
-        .badge-green  { background: #dcfce7; color: #166534; }
-        .badge-yellow { background: #fef9c3; color: #854d0e; }
-
-        .card-divider { border: none; border-top: 1px solid var(--slate-100); margin: 12px 0; }
-
-        .card-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-        }
-        .meta-item { display: flex; flex-direction: column; gap: 2px; }
-        .meta-label {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--slate-400);
-        }
-        .meta-value {
-            font-size: 13.5px;
-            font-weight: 400;
-            color: var(--slate-700);
-            line-height: 1.45;
-        }
-
-        /* Email section in card */
-        .email-section {
-            margin-top: 14px;
-            padding: 14px;
-            border-radius: var(--radius-md);
-            border: 1.5px dashed var(--slate-200);
-            background: var(--slate-50);
-        }
-        .email-section.has-email {
-            border-color: #bbf7d0;
-            background: #f0fdf4;
-        }
-        .email-label {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--slate-400);
-            margin-bottom: 6px;
-        }
-        .email-value {
-            font-family: var(--font-body);
-            font-size: 14.5px;
-            font-weight: 500;
-            letter-spacing: 0.01em;
-            color: var(--success);
-        }
-        .email-missing {
-            font-size: 13px;
-            font-weight: 300;
-            font-style: italic;
-            color: var(--slate-400);
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 14px;
-            flex-wrap: wrap;
-        }
-        .btn-sm {
-            padding: 7px 14px;
-            font-size: 12px;
-            border-radius: var(--radius-sm);
-        }
-
-        /* Inline email edit */
-        .email-edit-form {
-            display: none;
-            margin-top: 10px;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .email-edit-form.show { display: flex; }
-        .email-edit-input {
-            flex: 1;
-            min-width: 200px;
-            padding: 8px 14px;
-            border: 1.5px solid var(--orange-300);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 13px;
-            outline: none;
-            background: white;
-        }
-        .email-edit-input:focus { border-color: var(--orange-500); box-shadow: 0 0 0 3px rgba(249,115,22,.1); }
-
-        /* ============================================
-           EMPTY / LOADING STATES
-        ============================================ */
-        .state-box {
-            background: var(--white);
-            border: 1.5px dashed var(--slate-200);
-            border-radius: var(--radius-lg);
-            padding: 48px 24px;
-            text-align: center;
-        }
-        .state-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: var(--orange-100);
-            color: var(--orange-500);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin: 0 auto 16px;
-        }
-        .state-box h3 {
-            font-family: var(--font-display);
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            color: var(--slate-700);
-            margin-bottom: 8px;
-        }
-        .state-box p  {
-            font-size: 13.5px;
-            font-weight: 300;
-            color: var(--slate-500);
-            line-height: 1.65;
-        }
-
-        .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid var(--orange-100);
-            border-top-color: var(--orange-500);
-            border-radius: 50%;
-            animation: spin .7s linear infinite;
-            margin: 0 auto 16px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        .page-btn {
-            min-width: 36px;
-            height: 36px;
-            padding: 0 10px;
-            border: 1.5px solid var(--slate-200);
-            border-radius: var(--radius-sm);
-            background: var(--white);
-            color: var(--slate-600);
-            font-family: var(--font-body);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .page-btn:hover:not(:disabled) { border-color: var(--orange-400); color: var(--orange-600); }
-        .page-btn.active { background: var(--orange-500); color: white; border-color: var(--orange-500); }
-        .page-btn:disabled { opacity: .4; cursor: not-allowed; }
-
-        /* ============================================
-           MODAL
-        ============================================ */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15,23,42,.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal-overlay.open { display: flex; }
-
-        .modal {
-            background: var(--white);
-            border-radius: var(--radius-xl);
-            width: 100%;
-            max-width: 520px;
-            box-shadow: var(--shadow-lg);
-            animation: modalIn .25s ease;
-            overflow: hidden;
-        }
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(.96) translateY(10px); }
-            to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .modal-header {
-            padding: 24px 28px 20px;
-            border-bottom: 1px solid var(--slate-100);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h2 {
-            font-family: var(--font-display);
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            color: var(--slate-900);
-        }
-        .modal-close {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-sm);
-            border: none;
-            background: var(--slate-100);
-            color: var(--slate-500);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            transition: all .2s;
-        }
-        .modal-close:hover { background: #fee2e2; color: var(--error); }
-
-        .modal-body { padding: 24px 28px; }
-        .modal-footer {
-            padding: 16px 28px 24px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 10.5px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--slate-500);
-            margin-bottom: 7px;
-        }
-        .form-field { margin-bottom: 16px; }
-        .form-readonly {
-            padding: 10px 14px;
-            background: var(--slate-100);
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            color: var(--slate-500);
-            border: 1.5px solid var(--slate-200);
-        }
-
-        .modal-tabs {
-            display: flex;
-            border-bottom: 2px solid var(--slate-100);
-            margin-bottom: 24px;
-        }
-        .modal-tab {
-            flex: 1;
-            padding: 12px 16px;
-            border: none;
-            background: transparent;
-            font-family: var(--font-body);
-            font-size: 12.5px;
-            font-weight: 500;
-            letter-spacing: 0.03em;
-            color: var(--slate-400);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-            transition: all .2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .modal-tab.active { color: var(--orange-600); border-bottom-color: var(--orange-500); font-weight: 600; }
-        .modal-tab:hover:not(.active) { color: var(--slate-600); }
-
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
-
-        /* Excel upload area */
-        .upload-area {
-            border: 2px dashed var(--slate-200);
-            border-radius: var(--radius-md);
-            padding: 32px;
-            text-align: center;
-            cursor: pointer;
-            transition: all .2s;
-        }
-        .upload-area:hover, .upload-area.drag-over {
-            border-color: var(--orange-400);
-            background: var(--orange-50);
-        }
-        .upload-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: var(--radius-md);
-            background: var(--orange-100);
-            color: var(--orange-600);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin: 0 auto 12px;
-        }
-        .upload-area h4 {
-            font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--slate-700);
-            margin-bottom: 6px;
-        }
-        .upload-area p  {
-            font-size: 12.5px;
-            font-weight: 300;
-            color: var(--slate-400);
-            line-height: 1.55;
-        }
-        .upload-hint {
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--orange-600);
-            margin-top: 8px;
-            letter-spacing: 0.01em;
-        }
-
-        .progress-bar-wrap {
-            display: none;
-            margin-top: 16px;
-        }
-        .progress-bar-wrap.show { display: block; }
-        .progress-label {
-            font-size: 11.5px;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-            color: var(--slate-600);
-            margin-bottom: 7px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .progress-track { height: 8px; background: var(--slate-100); border-radius: 999px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange-500), var(--orange-400)); border-radius: 999px; transition: width .3s ease; }
-
-        /* Template note */
-        .template-note {
-            background: var(--orange-50);
-            border: 1px solid var(--orange-200);
-            border-radius: var(--radius-md);
-            padding: 13px 16px;
-            font-size: 12.5px;
-            font-weight: 400;
-            line-height: 1.7;
-            color: var(--orange-800);
-            margin-top: 14px;
-        }
-        .template-note strong { font-weight: 600; letter-spacing: 0.01em; }
-
-        /* ============================================
-           RESPONSIVE
-        ============================================ */
-        @media (max-width: 640px) {
-            .app-wrapper { padding: 16px 14px 40px; }
-            .header { padding: 24px 22px; }
-            .header-stats { gap: 16px; }
-            .stat-value { font-size: 18px; }
-            .info-strip { grid-template-columns: 1fr; }
-            .form-grid { grid-template-columns: 1fr; }
-            .search-footer { flex-direction: column; align-items: stretch; }
-            .btn-group { justify-content: center; }
-            .btn-primary { width: 100%; justify-content: center; }
-            .card-meta { grid-template-columns: 1fr 1fr; }
-            .modal-body { padding: 20px; }
-            .modal-footer { padding: 14px 20px 20px; flex-direction: column-reverse; }
-            .modal-footer .btn { width: 100%; justify-content: center; }
-        }
-
-        /* Utility */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        hr.divider { border: none; border-top: 1px solid var(--slate-100); margin: 20px 0; }
+    .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<!-- Toast container -->
+<!-- ═══════════════════════════ TOAST ═══════════════════════════ -->
 <div id="toast-container"></div>
 
-<div class="app-wrapper">
+<!-- ═══════════════════════════ TOP BAR ═══════════════════════════ -->
+<div class="topbar">
+    <div class="topbar-brand">
+        <div class="topbar-logo"><i class="fas fa-chart-bar"></i></div>
+        <div class="topbar-title">
+            <span>SE2026</span>
+            <span>Sensus Ekonomi BPS</span>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="topbar-badge"><i class="fas fa-map-marker-alt"></i> Provinsi Lampung</div>
+    </div>
+</div>
 
-    <!-- ======================== HEADER ======================== -->
-    <header class="header">
-        <div class="header-inner">
-            <div class="header-badge">
-                <i class="fas fa-chart-bar"></i>
-                BPS Provinsi Lampung
-            </div>
-            <h1>Verifikasi Email Direktori Usaha<br>Sensus Ekonomi 2026</h1>
-            <p>Temukan data usaha Anda berdasarkan NIB atau Nama Usaha, lalu lengkapi alamat email untuk keperluan pendataan SE2026.</p>
-            <div class="header-stats">
-                <div class="stat-item">
-                    <span class="stat-value" id="stat-total">—</span>
-                    <span class="stat-label">Total Usaha</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="stat-beremail">—</span>
-                    <span class="stat-label">Sudah Ber-email</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="stat-kosong">—</span>
-                    <span class="stat-label">Belum Ber-email</span>
-                </div>
-            </div>
-        </div>
-    </header>
+<!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+<aside class="sidebar">
 
-    <!-- ======================== INFO STRIP ======================== -->
-    <div class="info-strip">
-        <div class="info-card">
-            <div class="info-icon"><i class="fas fa-search"></i></div>
-            <div>
-                <h4>1. Cari Usaha Anda</h4>
-                <p>Ketik NIB atau Nama Usaha di kolom pencarian</p>
+    <!-- STATS -->
+    <div class="sidebar-section" style="padding-top:22px">
+        <div class="sidebar-label">Statistik Database</div>
+        <div class="stat-grid">
+            <div class="stat-card accent" style="grid-column:1/-1">
+                <div class="sv" id="stat-total">—</div>
+                <div class="sl">Total Usaha Terdaftar</div>
             </div>
-        </div>
-        <div class="info-card">
-            <div class="info-icon"><i class="fas fa-envelope"></i></div>
-            <div>
-                <h4>2. Isi Alamat Email</h4>
-                <p>Klik "Isi Email" pada kartu usaha Anda dan masukkan email aktif</p>
+            <div class="stat-card">
+                <div class="sv" id="stat-beremail" style="color:var(--success)">—</div>
+                <div class="sl">Sudah Ber-email</div>
             </div>
-        </div>
-        <div class="info-card">
-            <div class="info-icon"><i class="fas fa-check-circle"></i></div>
-            <div>
-                <h4>3. Data Tersimpan</h4>
-                <p>Email langsung tersimpan ke database SE2026 Provinsi Lampung</p>
+            <div class="stat-card">
+                <div class="sv" id="stat-kosong">—</div>
+                <div class="sl">Belum Ber-email</div>
             </div>
         </div>
     </div>
 
-    <!-- ======================== SEARCH CARD ======================== -->
-    <div class="search-card">
-        <div class="section-label"><i class="fas fa-magnifying-glass" style="margin-right:6px"></i>Pencarian Data Usaha</div>
+    <div class="sidebar-divider"></div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" id="tab-nib" onclick="switchTab('nib')">
-                <i class="fas fa-id-card"></i> Berdasarkan NIB
+    <!-- SEARCH -->
+    <div class="sidebar-section">
+        <div class="sidebar-label">Cari Data Usaha</div>
+
+        <div class="search-tabs">
+            <button class="search-tab active" id="tab-nib" onclick="switchTab('nib')">
+                <i class="fas fa-id-card"></i> NIB
             </button>
-            <button class="tab-btn" id="tab-nama" onclick="switchTab('nama')">
-                <i class="fas fa-building"></i> Berdasarkan Nama / Alamat
+            <button class="search-tab" id="tab-nama" onclick="switchTab('nama')">
+                <i class="fas fa-building"></i> Nama / Alamat
             </button>
         </div>
 
         <!-- Form NIB -->
         <div id="form-nib">
-            <div class="input-group">
-                <i class="fas fa-hashtag input-icon"></i>
-                <input type="text" id="input-nib" class="form-input"
-                    placeholder="Masukkan Nomor Induk Berusaha (NIB)…"
-                    onkeydown="if(event.key==='Enter') cariUsaha()">
+            <div class="field">
+                <label class="field-label">Nomor Induk Berusaha</label>
+                <div class="field-wrap">
+                    <i class="fas fa-hashtag fi"></i>
+                    <input type="text" id="input-nib" class="field-input"
+                        placeholder="Masukkan NIB…"
+                        onkeydown="if(event.key==='Enter') cariUsaha()">
+                </div>
             </div>
         </div>
 
-        <!-- Form Nama/Alamat -->
+        <!-- Form Nama -->
         <div id="form-nama" class="hidden">
-            <div class="form-grid" style="margin-bottom:12px">
-                <div class="input-group">
-                    <i class="fas fa-store input-icon"></i>
-                    <input type="text" id="input-nama" class="form-input"
-                        placeholder="Nama Usaha…"
-                        onkeydown="if(event.key==='Enter') cariUsaha()">
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-map-marker-alt input-icon"></i>
-                    <input type="text" id="input-alamat" class="form-input"
-                        placeholder="Alamat (opsional)…"
+            <div class="field">
+                <label class="field-label">Nama Usaha</label>
+                <div class="field-wrap">
+                    <i class="fas fa-store fi"></i>
+                    <input type="text" id="input-nama" class="field-input"
+                        placeholder="Nama usaha…"
                         onkeydown="if(event.key==='Enter') cariUsaha()">
                 </div>
             </div>
-            <div class="select-wrap input-group">
-                <i class="fas fa-map-pin input-icon"></i>
-                <select id="select-kabupaten" class="form-select">
-                    <option value="">— Semua Kabupaten/Kota —</option>
-                    <option>LAMPUNG BARAT</option>
-                    <option>TANGGAMUS</option>
-                    <option>LAMPUNG SELATAN</option>
-                    <option>LAMPUNG TIMUR</option>
-                    <option>LAMPUNG TENGAH</option>
-                    <option>LAMPUNG UTARA</option>
-                    <option>WAY KANAN</option>
-                    <option>TULANGBAWANG</option>
-                    <option>PESAWARAN</option>
-                    <option>PRINGSEWU</option>
-                    <option>MESUJI</option>
-                    <option>TULANG BAWANG BARAT</option>
-                    <option>PESISIR BARAT</option>
-                    <option>BANDAR LAMPUNG</option>
-                    <option>METRO</option>
-                </select>
-                <i class="fas fa-chevron-down chevron"></i>
+            <div class="field">
+                <label class="field-label">Kabupaten / Kota</label>
+                <div class="field-wrap">
+                    <i class="fas fa-map-pin fi"></i>
+                    <select id="select-kabupaten" class="field-select">
+                        <option value="">— Semua Kabupaten —</option>
+                        <option>LAMPUNG BARAT</option><option>TANGGAMUS</option>
+                        <option>LAMPUNG SELATAN</option><option>LAMPUNG TIMUR</option>
+                        <option>LAMPUNG TENGAH</option><option>LAMPUNG UTARA</option>
+                        <option>WAY KANAN</option><option>TULANGBAWANG</option>
+                        <option>PESAWARAN</option><option>PRINGSEWU</option>
+                        <option>MESUJI</option><option>TULANG BAWANG BARAT</option>
+                        <option>PESISIR BARAT</option><option>BANDAR LAMPUNG</option>
+                        <option>METRO</option>
+                    </select>
+                    <i class="fas fa-chevron-down field-chevron"></i>
+                </div>
             </div>
         </div>
 
-        <!-- Footer -->
-        <div class="search-footer">
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="bukaModalTambah()">
-                    <i class="fas fa-plus"></i> Tambah Satu Usaha
-                </button>
-                <div class="btn-divider"></div>
-                <button class="btn btn-success" onclick="bukaModalUpload()">
-                    <i class="fas fa-file-excel"></i> Upload Excel (Massal)
-                </button>
-                <div class="btn-divider"></div>
-                <button class="btn btn-ghost" onclick="downloadTemplate()" title="Download template Excel">
-                    <i class="fas fa-download"></i> Template
-                </button>
-            </div>
-            <button class="btn btn-primary" onclick="cariUsaha()">
-                <i class="fas fa-search"></i> Cari Sekarang
+        <button class="btn btn-primary" onclick="cariUsaha()" style="margin-top:4px">
+            <i class="fas fa-search"></i> Cari Usaha
+        </button>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- PETUGAS MENU -->
+    <div class="sidebar-section">
+        <div class="sidebar-label">Menu Petugas</div>
+        <div class="petugas-section">
+            <button class="btn btn-outline" onclick="bukaModalTambah()">
+                <i class="fas fa-plus"></i> Tambah Usaha Manual
+            </button>
+            <button class="btn btn-success-outline" onclick="bukaModalUpload()">
+                <i class="fas fa-file-excel"></i> Upload Excel Massal
+            </button>
+            <button class="btn btn-ghost" onclick="downloadTemplate()">
+                <i class="fas fa-download"></i> Unduh Format Template
             </button>
         </div>
     </div>
 
-    <!-- ======================== RESULTS ======================== -->
+    <div class="sidebar-divider"></div>
+
+    <!-- HOW TO -->
+    <div class="sidebar-section">
+        <div class="sidebar-label">Cara Pengisian</div>
+        <div class="how-steps">
+            <div class="how-step">
+                <div class="how-num">1</div>
+                <div class="how-text">
+                    <h5>Cari Usaha Anda</h5>
+                    <p>Ketik NIB atau nama usaha di panel pencarian</p>
+                </div>
+            </div>
+            <div class="how-step">
+                <div class="how-num">2</div>
+                <div class="how-text">
+                    <h5>Isi Kontak & Email</h5>
+                    <p>Klik "Isi / Ubah Data" pada kartu usaha yang ditemukan</p>
+                </div>
+            </div>
+            <div class="how-step">
+                <div class="how-num">3</div>
+                <div class="how-text">
+                    <h5>Data Tersimpan</h5>
+                    <p>Informasi langsung masuk ke database SE2026 Lampung</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</aside>
+
+<!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
+<main class="main">
+<div class="main-inner">
+
+    <div class="page-heading">
+        <h2>Hasil Pencarian</h2>
+        <p>Temukan usaha Anda, lalu lengkapi alamat email dan informasi kontak person untuk keperluan pendataan Sensus Ekonomi 2026.</p>
+    </div>
+
+    <!-- Results -->
     <div id="results-area" class="hidden">
         <div class="results-header">
             <div class="results-count">
                 <i class="fas fa-list-ul"></i>
-                <span id="results-count-text">0 hasil ditemukan</span>
+                <span id="results-count-text">0 hasil</span>
             </div>
-            <div style="font-size:12px;color:var(--slate-400);" id="results-page-info"></div>
+            <div class="results-page-info" id="results-page-info"></div>
         </div>
         <div id="results-list"></div>
         <div class="pagination" id="pagination"></div>
     </div>
 
-    <!-- ======================== EMPTY STATE ======================== -->
+    <!-- Idle -->
     <div id="state-idle" class="state-box">
         <div class="state-icon"><i class="fas fa-magnifying-glass"></i></div>
         <h3>Mulai Pencarian</h3>
-        <p>Masukkan NIB atau Nama Usaha Anda<br>lalu klik "Cari Sekarang".</p>
+        <p>Gunakan panel di sebelah kiri untuk mencari data usaha<br>berdasarkan NIB atau Nama Usaha.</p>
     </div>
 
+    <!-- Loading -->
     <div id="state-loading" class="state-box hidden">
         <div class="spinner"></div>
         <h3>Sedang Mencari…</h3>
         <p>Mohon tunggu sebentar.</p>
     </div>
 
+    <!-- Empty -->
     <div id="state-empty" class="state-box hidden">
-        <div class="state-icon" style="background:#fee2e2;color:#dc2626"><i class="fas fa-inbox"></i></div>
-        <h3>Data Tidak Ditemukan</h3>
-        <p>Coba gunakan kata kunci lain, atau tambahkan usaha baru<br>jika memang belum terdaftar.</p>
+        <div class="state-icon" style="background:#fee2e2;color:var(--error)"><i class="fas fa-inbox"></i></div>
+        <h3>Tidak Ditemukan</h3>
+        <p>Tidak ada data usaha yang cocok dengan pencarian Anda.<br>Pastikan kata kunci atau filter Kabupaten sudah benar.</p>
     </div>
 
-</div><!-- /app-wrapper -->
+</div>
+</main>
 
-<!-- ======================== MODAL TAMBAH SATU ======================== -->
+<!-- ═══════════════ MODAL TAMBAH SATU ═══════════════ -->
 <div class="modal-overlay" id="modal-tambah">
-    <div class="modal">
-        <div class="modal-header">
-            <h2><i class="fas fa-plus-circle" style="color:var(--orange-500);margin-right:8px;font-size:16px"></i>Tambah Usaha Baru</h2>
-            <button class="modal-close" onclick="tutupModal('modal-tambah')"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="form-field">
-                <label class="form-label">Nomor Induk Berusaha (NIB) *</label>
-                <div class="input-group" style="margin-bottom:0">
-                    <i class="fas fa-hashtag input-icon"></i>
-                    <input type="text" id="tambah-nib" class="form-input" placeholder="Contoh: 9120300123456">
-                </div>
+<div class="modal">
+    <div class="modal-header">
+        <h2><i class="fas fa-plus-circle" style="color:var(--orange-500);margin-right:8px;font-size:15px"></i>Tambah Usaha Baru</h2>
+        <button class="modal-close" onclick="tutupModal('modal-tambah')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+
+        <!-- Data Usaha -->
+        <div class="mfield-group-title"><i class="fas fa-building"></i> Informasi Usaha</div>
+        <div class="mfield mfield-2col">
+            <div>
+                <label class="mfield-label">NIB *</label>
+                <input type="text" id="tambah-nib" class="mfield-input" placeholder="Nomor Induk Berusaha">
             </div>
-            <div class="form-field">
-                <label class="form-label">Nama Usaha *</label>
-                <div class="input-group" style="margin-bottom:0">
-                    <i class="fas fa-building input-icon"></i>
-                    <input type="text" id="tambah-nama" class="form-input" placeholder="Nama resmi usaha">
-                </div>
-            </div>
-            <div class="form-field">
-                <label class="form-label">Nama Komersil</label>
-                <div class="input-group" style="margin-bottom:0">
-                    <i class="fas fa-tag input-icon"></i>
-                    <input type="text" id="tambah-komersil" class="form-input" placeholder="Nama yang dikenal masyarakat (opsional)">
-                </div>
-            </div>
-            <div class="form-field">
-                <label class="form-label">Provinsi</label>
-                <div class="form-readonly">Lampung</div>
-            </div>
-            <div class="form-field">
-                <label class="form-label">Kabupaten / Kota *</label>
-                <div class="select-wrap input-group" style="margin-bottom:0">
-                    <i class="fas fa-map-pin input-icon"></i>
-                    <select id="tambah-kab" class="form-select">
-                        <option value="">— Pilih Kabupaten/Kota —</option>
-                        <option>LAMPUNG BARAT</option>
-                        <option>TANGGAMUS</option>
-                        <option>LAMPUNG SELATAN</option>
-                        <option>LAMPUNG TIMUR</option>
-                        <option>LAMPUNG TENGAH</option>
-                        <option>LAMPUNG UTARA</option>
-                        <option>WAY KANAN</option>
-                        <option>TULANGBAWANG</option>
-                        <option>PESAWARAN</option>
-                        <option>PRINGSEWU</option>
-                        <option>MESUJI</option>
-                        <option>TULANG BAWANG BARAT</option>
-                        <option>PESISIR BARAT</option>
-                        <option>BANDAR LAMPUNG</option>
-                        <option>METRO</option>
-                    </select>
-                    <i class="fas fa-chevron-down chevron"></i>
-                </div>
-            </div>
-            <div class="form-field">
-                <label class="form-label">Alamat Lengkap *</label>
-                <textarea id="tambah-alamat" class="form-input" rows="2"
-                    style="padding-left:16px;resize:vertical"
-                    placeholder="Jalan, desa/kelurahan, kecamatan…"></textarea>
-            </div>
-            <div class="form-field" style="margin-bottom:0">
-                <label class="form-label">Alamat Email *</label>
-                <div class="input-group" style="margin-bottom:0">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="tambah-email" class="form-input" placeholder="email@perusahaan.com">
-                </div>
+            <div>
+                <label class="mfield-label">Kabupaten / Kota *</label>
+                <select id="tambah-kab" class="mfield-select">
+                    <option value="">— Pilih —</option>
+                    <option>LAMPUNG BARAT</option><option>TANGGAMUS</option>
+                    <option>LAMPUNG SELATAN</option><option>LAMPUNG TIMUR</option>
+                    <option>LAMPUNG TENGAH</option><option>LAMPUNG UTARA</option>
+                    <option>WAY KANAN</option><option>TULANGBAWANG</option>
+                    <option>PESAWARAN</option><option>PRINGSEWU</option>
+                    <option>MESUJI</option><option>TULANG BAWANG BARAT</option>
+                    <option>PESISIR BARAT</option><option>BANDAR LAMPUNG</option>
+                    <option>METRO</option>
+                </select>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="tutupModal('modal-tambah')">Batal</button>
-            <button class="btn btn-primary" onclick="simpanUsahaBaru()">
-                <i class="fas fa-save"></i> Simpan Data
-            </button>
+        <div class="mfield">
+            <label class="mfield-label">Nama Usaha *</label>
+            <input type="text" id="tambah-nama" class="mfield-input" placeholder="Nama resmi usaha">
         </div>
+        <div class="mfield">
+            <label class="mfield-label">Nama Komersil</label>
+            <input type="text" id="tambah-komersil" class="mfield-input" placeholder="Nama yang dikenal publik (opsional)">
+        </div>
+        <div class="mfield">
+            <label class="mfield-label">Provinsi</label>
+            <div class="mfield-readonly">Lampung</div>
+        </div>
+        <div class="mfield">
+            <label class="mfield-label">Alamat Lengkap *</label>
+            <textarea id="tambah-alamat" class="mfield-input" rows="2"
+                style="resize:vertical" placeholder="Jalan, desa/kelurahan, kecamatan…"></textarea>
+        </div>
+        <div class="mfield">
+            <label class="mfield-label">Alamat Email Usaha *</label>
+            <input type="email" id="tambah-email" class="mfield-input" placeholder="email@perusahaan.com">
+        </div>
+
+        <!-- Kontak Person -->
+        <div class="mfield-group-title"><i class="fas fa-user-tie"></i> Kontak Person</div>
+        <div class="mfield">
+            <label class="mfield-label">Nama Kontak Person *</label>
+            <input type="text" id="tambah-kontak-nama" class="mfield-input" placeholder="Nama lengkap PIC">
+        </div>
+        <div class="mfield mfield-2col">
+            <div>
+                <label class="mfield-label">Jabatan</label>
+                <input type="text" id="tambah-kontak-jabatan" class="mfield-input" placeholder="Contoh: Direktur, Manajer">
+            </div>
+            <div>
+                <label class="mfield-label">No. Telepon / WA *</label>
+                <input type="tel" id="tambah-kontak-telp" class="mfield-input" placeholder="08xx-xxxx-xxxx">
+            </div>
+        </div>
+        <div class="mfield">
+            <label class="mfield-label">Email Kontak Person</label>
+            <input type="email" id="tambah-kontak-email" class="mfield-input" placeholder="email.pic@perusahaan.com (opsional)">
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="tutupModal('modal-tambah')">Batal</button>
+        <button class="modal-btn modal-btn-primary" onclick="simpanUsahaBaru()">
+            <i class="fas fa-save"></i> Simpan Data
+        </button>
     </div>
 </div>
+</div>
 
-<!-- ======================== MODAL UPLOAD EXCEL ======================== -->
+<!-- ═══════════════ MODAL UPLOAD EXCEL ═══════════════ -->
 <div class="modal-overlay" id="modal-upload">
-    <div class="modal">
-        <div class="modal-header">
-            <h2><i class="fas fa-file-excel" style="color:#16a34a;margin-right:8px;font-size:16px"></i>Upload Data Massal</h2>
-            <button class="modal-close" onclick="tutupModal('modal-upload')"><i class="fas fa-times"></i></button>
+<div class="modal">
+    <div class="modal-header">
+        <h2><i class="fas fa-file-excel" style="color:#16a34a;margin-right:8px;font-size:15px"></i>Upload Data Massal</h2>
+        <button class="modal-close" onclick="tutupModal('modal-upload')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+        <div class="upload-area" id="upload-area"
+            onclick="document.getElementById('input-excel').click()"
+            ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h4>Klik atau seret file Excel ke sini</h4>
+            <p>Format: <strong>.xlsx</strong> atau <strong>.xls</strong></p>
+            <p class="upload-hint"><i class="fas fa-info-circle"></i> Gunakan template agar kolom sesuai</p>
         </div>
-        <div class="modal-body">
-            <!-- Upload area -->
-            <div class="upload-area" id="upload-area"
-                onclick="document.getElementById('input-excel').click()"
-                ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
-                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                <h4>Klik atau seret file Excel ke sini</h4>
-                <p>Format yang didukung: <strong>.xlsx</strong> atau <strong>.xls</strong></p>
-                <p class="upload-hint"><i class="fas fa-info-circle"></i> Gunakan template yang disediakan agar kolom sesuai</p>
-            </div>
-            <input type="file" id="input-excel" accept=".xlsx,.xls" class="hidden" onchange="prosesUploadExcel(event)">
+        <input type="file" id="input-excel" accept=".xlsx,.xls" class="hidden" onchange="prosesUploadExcel(event)">
 
-            <!-- Progress -->
-            <div class="progress-bar-wrap" id="progress-wrap">
-                <div class="progress-label">
-                    <span id="progress-text">Mengirim data…</span>
-                    <span id="progress-pct">0%</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-                </div>
+        <div class="progress-wrap" id="progress-wrap">
+            <div class="progress-label">
+                <span id="progress-text">Mengirim data…</span>
+                <span id="progress-pct">0%</span>
             </div>
-
-            <!-- Template note -->
-            <div class="template-note">
-                <strong><i class="fas fa-lightbulb"></i> Kolom wajib dalam template Excel:</strong><br>
-                <code>NIB</code> · <code>Nama Usaha</code> · <code>Nama Komersil</code> · <code>Kabupaten/Kota</code> · <code>Alamat</code> · <code>Email</code><br>
-                <br>
-                Belum punya template? <a href="#" onclick="downloadTemplate();return false;" style="color:var(--orange-700);font-weight:700">Download di sini</a>.
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill" style="width:0%"></div>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="tutupModal('modal-upload')">Tutup</button>
+
+        <div class="template-note">
+            <strong><i class="fas fa-lightbulb"></i> Kolom wajib dalam template:</strong><br>
+            <code>NIB</code> · <code>Nama Usaha</code> · <code>Nama Komersil</code> · <code>Kabupaten/Kota</code> · <code>Alamat</code> · <code>Email</code> ·
+            <code>Nama Kontak</code> · <code>Jabatan Kontak</code> · <code>Telp Kontak</code> · <code>Email Kontak</code><br><br>
+            Belum punya template? <a href="#" onclick="downloadTemplate();return false;" style="color:var(--orange-700);font-weight:600">Unduh di sini</a>.
         </div>
     </div>
+    <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="tutupModal('modal-upload')">Tutup</button>
+    </div>
+</div>
 </div>
 
-<!-- ======================== FIREBASE + LOGIC ======================== -->
+<!-- ═══════════════════════════ FIREBASE + LOGIC ═══════════════════════════ -->
 <script type="module">
 
-// ─────────────────────────────────────────────
-// FIREBASE SETUP
-// ─────────────────────────────────────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import {
-    getFirestore,
-    collection, getDocs, addDoc, doc, updateDoc,
-    query, where, orderBy, limit, writeBatch, getCountFromServer
+    getFirestore, collection, getDocs, addDoc,
+    doc, updateDoc, query, where, writeBatch
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// ⬇️ PASTE FIREBASE CONFIG ANDA DI SINI
+// ─── ⬇️ PASTE FIREBASE CONFIG ANDA DI SINI ───
 const firebaseConfig = {
-    apiKey: "AIzaSyDT3VUNM6LZYZItOtuyItqXYVvG6J8fx-s",
-    authDomain: "se2026-f3003.firebaseapp.com",
-    projectId: "se2026-f3003",
-    storageBucket: "se2026-f3003.firebasestorage.app",
-    messagingSenderId: "80341327498",
-    appId: "1:80341327498:web:0cf9a854246eb784be5773"
+    apiKey: "API_KEY_ANDA",
+    authDomain: "PROJECT_ID.firebaseapp.com",
+    projectId: "PROJECT_ID",
+    storageBucket: "PROJECT_ID.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
-const COL = "perusahaan"; // nama koleksi Firestore
+const COL = "perusahaan";
 
-// ─────────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────────
-let allResults   = [];  // semua hasil pencarian saat ini
-let currentPage  = 1;
-const PAGE_SIZE  = 10;
-let activeTab    = 'nib';
+// ─── STATE ───
+let allResults  = [];
+let currentPage = 1;
+const PAGE_SIZE = 10;
+let activeTab   = 'nib';
 
-// ─────────────────────────────────────────────
-// STATS — diload saat halaman dibuka
-// ─────────────────────────────────────────────
+// ─── STATS ───
 async function loadStats() {
     try {
-        const snap      = await getDocs(collection(db, COL));
-        const total     = snap.size;
-        let beremail    = 0;
+        const snap = await getDocs(collection(db, COL));
+        let beremail = 0;
         snap.forEach(d => { if (d.data().email) beremail++; });
-        const kosong = total - beremail;
-
-        animateCounter('stat-total',    total);
+        animateCounter('stat-total',    snap.size);
         animateCounter('stat-beremail', beremail);
-        animateCounter('stat-kosong',   kosong);
-    } catch(e) {
-        // Firebase belum dikonfigurasi — tampilkan tanda strip
-    }
+        animateCounter('stat-kosong',   snap.size - beremail);
+    } catch(e) {}
 }
-
 function animateCounter(id, target) {
     const el = document.getElementById(id);
-    let current = 0;
-    const step = Math.ceil(target / 30);
-    const timer = setInterval(() => {
-        current = Math.min(current + step, target);
-        el.textContent = current.toLocaleString('id-ID');
-        if (current >= target) clearInterval(timer);
+    let cur = 0;
+    const step = Math.max(1, Math.ceil(target / 30));
+    const t = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.textContent = cur.toLocaleString('id-ID');
+        if (cur >= target) clearInterval(t);
     }, 40);
 }
-
 loadStats();
 
-// ─────────────────────────────────────────────
-// TABS
-// ─────────────────────────────────────────────
+// ─── TABS ───
 window.switchTab = function(tab) {
     activeTab = tab;
     document.getElementById('tab-nib').classList.toggle('active',  tab === 'nib');
@@ -1339,105 +1475,80 @@ window.switchTab = function(tab) {
     document.getElementById('form-nama').classList.toggle('hidden', tab !== 'nama');
 };
 
-// ─────────────────────────────────────────────
-// SEARCH
-// ─────────────────────────────────────────────
+// ─── SEARCH ───
 window.cariUsaha = async function() {
     setState('loading');
-
     try {
         const ref = collection(db, COL);
-        let q;
-
         if (activeTab === 'nib') {
             const nib = document.getElementById('input-nib').value.trim();
             if (!nib) { toast('Masukkan NIB terlebih dahulu.', 'warning'); setState('idle'); return; }
-            q = query(ref, where('nib', '==', nib));
-
-        } else {
-            const nama   = document.getElementById('input-nama').value.trim().toLowerCase();
-            const alamat = document.getElementById('input-alamat').value.trim().toLowerCase();
-            const kab    = document.getElementById('select-kabupaten').value;
-
-            if (!nama && !kab) { toast('Masukkan Nama Usaha atau pilih Kabupaten/Kota.', 'warning'); setState('idle'); return; }
-
-            // Ambil semua, filter client-side (Firestore tidak support full-text search)
-            const snap = await getDocs(ref);
-            let data = [];
-            snap.forEach(d => data.push({ id: d.id, ...d.data() }));
-
-            if (nama)   data = data.filter(r => (r.namaUsaha||'').toLowerCase().includes(nama) || (r.namaKomersil||'').toLowerCase().includes(nama));
-            if (alamat) data = data.filter(r => (r.alamat||'').toLowerCase().includes(alamat));
-            if (kab)    data = data.filter(r => (r.kabkot||'').toUpperCase() === kab.toUpperCase());
-
+            const snap = await getDocs(query(ref, where('nib', '==', nib)));
+            const data = []; snap.forEach(d => data.push({ id: d.id, ...d.data() }));
             renderResults(data);
-            return;
+        } else {
+            const nama = document.getElementById('input-nama').value.trim().toLowerCase();
+            const kab  = document.getElementById('select-kabupaten').value;
+            if (!nama && !kab) { toast('Masukkan Nama Usaha atau pilih Kabupaten/Kota.', 'warning'); setState('idle'); return; }
+            const snap = await getDocs(ref);
+            let data = []; snap.forEach(d => data.push({ id: d.id, ...d.data() }));
+            if (nama) data = data.filter(r => (r.namaUsaha||'').toLowerCase().includes(nama) || (r.namaKomersil||'').toLowerCase().includes(nama));
+            if (kab)  data = data.filter(r => (r.kabkot||'').toUpperCase() === kab.toUpperCase());
+            renderResults(data);
         }
-
-        const snap = await getDocs(q);
-        const data = [];
-        snap.forEach(d => data.push({ id: d.id, ...d.data() }));
-        renderResults(data);
-
     } catch(e) {
         console.error(e);
-        toast('Gagal mengambil data. Pastikan Firebase sudah dikonfigurasi.', 'error');
+        toast('Gagal mengambil data. Periksa konfigurasi Firebase.', 'error');
         setState('idle');
     }
 };
 
-// ─────────────────────────────────────────────
-// RENDER RESULTS
-// ─────────────────────────────────────────────
+// ─── RENDER ───
 function renderResults(data) {
-    allResults  = data;
-    currentPage = 1;
-    if (data.length === 0) { setState('empty'); return; }
-    setState('results');
-    renderPage();
+    allResults = data; currentPage = 1;
+    if (!data.length) { setState('empty'); return; }
+    setState('results'); renderPage();
 }
 
 function renderPage() {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const end   = Math.min(start + PAGE_SIZE, allResults.length);
-    const page  = allResults.slice(start, end);
+    const start = (currentPage-1)*PAGE_SIZE;
+    const page  = allResults.slice(start, start+PAGE_SIZE);
     const total = allResults.length;
 
-    document.getElementById('results-count-text').textContent =
-        `${total.toLocaleString('id-ID')} hasil ditemukan`;
-    document.getElementById('results-page-info').textContent =
-        total > PAGE_SIZE ? `Halaman ${currentPage} dari ${Math.ceil(total/PAGE_SIZE)}` : '';
+    document.getElementById('results-count-text').textContent = `${total.toLocaleString('id-ID')} hasil ditemukan`;
+    document.getElementById('results-page-info').textContent  = total > PAGE_SIZE ? `Halaman ${currentPage} dari ${Math.ceil(total/PAGE_SIZE)}` : '';
 
     const list = document.getElementById('results-list');
     list.innerHTML = '';
-
     page.forEach((item, i) => {
         const card = buildCard(item);
-        card.style.animationDelay = `${i * 0.04}s`;
+        card.style.animationDelay = `${i*0.04}s`;
         list.appendChild(card);
     });
-
     renderPagination(total);
-    window.scrollTo({ top: document.getElementById('results-area').offsetTop - 20, behavior: 'smooth' });
+    document.getElementById('results-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function buildCard(item) {
-    const hasEmail = !!item.email;
+    const hasEmail   = !!item.email;
+    const hasKontak  = !!(item.kontakNama || item.kontakTelp);
     const div = document.createElement('div');
     div.className = 'result-card';
     div.innerHTML = `
-        <div class="card-top">
-            <div class="card-left">
-                <div class="card-name">${esc(item.namaUsaha || '—')}</div>
+        <div class="card-header-row">
+            <div>
+                <div class="card-name">${esc(item.namaUsaha||'—')}</div>
                 ${item.namaKomersil && item.namaKomersil !== item.namaUsaha
-                    ? `<div class="card-komersil"><i class="fas fa-tag" style="margin-right:4px;opacity:.6"></i>${esc(item.namaKomersil)}</div>`
-                    : ''}
+                    ? `<div class="card-komersil"><i class="fas fa-tag" style="opacity:.5;margin-right:4px"></i>${esc(item.namaKomersil)}</div>` : ''}
                 <div class="card-badges">
                     <span class="badge badge-orange"><i class="fas fa-map-marker-alt"></i>${esc(item.kabkot||'—')}</span>
                     <span class="badge badge-slate"><i class="fas fa-hashtag"></i>NIB: ${esc(item.nib||'—')}</span>
                     ${hasEmail
                         ? '<span class="badge badge-green"><i class="fas fa-check-circle"></i>Email Terisi</span>'
-                        : '<span class="badge badge-yellow"><i class="fas fa-exclamation-circle"></i>Email Belum Diisi</span>'}
+                        : '<span class="badge badge-yellow"><i class="fas fa-exclamation-circle"></i>Email Kosong</span>'}
+                    ${hasKontak
+                        ? '<span class="badge badge-green"><i class="fas fa-user-check"></i>Kontak Terisi</span>'
+                        : '<span class="badge badge-yellow"><i class="fas fa-user-slash"></i>Kontak Kosong</span>'}
                 </div>
             </div>
         </div>
@@ -1455,33 +1566,75 @@ function buildCard(item) {
             </div>
         </div>
 
-        <!-- Email Section -->
+        <!-- Kontak Person -->
+        <div class="card-contact-grid" id="kontak-sec-${item.id}">
+            <div class="contact-header">
+                <i class="fas fa-user-tie"></i> Kontak Person
+            </div>
+            <div>
+                <div class="contact-label">Nama</div>
+                <div class="contact-value">${esc(item.kontakNama||'—')}</div>
+            </div>
+            <div>
+                <div class="contact-label">Jabatan</div>
+                <div class="contact-value">${esc(item.kontakJabatan||'—')}</div>
+            </div>
+            <div>
+                <div class="contact-label">No. Telepon / WA</div>
+                <div class="contact-value">${esc(item.kontakTelp||'—')}</div>
+            </div>
+            <div>
+                <div class="contact-label">Email Kontak</div>
+                <div class="contact-value">${esc(item.kontakEmail||'—')}</div>
+            </div>
+        </div>
+
+        <!-- Email Usaha -->
         <div class="email-section ${hasEmail ? 'has-email' : ''}" id="email-sec-${item.id}">
-            <div class="email-label"><i class="fas fa-envelope" style="margin-right:4px"></i>Alamat Email</div>
+            <div class="email-sec-label"><i class="fas fa-envelope"></i> Email Usaha</div>
             ${hasEmail
                 ? `<div class="email-value">${esc(item.email)}</div>`
-                : `<div class="email-missing">Belum diisi — klik "Isi Email" untuk melengkapi data ini</div>`}
+                : `<div class="email-missing">Belum diisi — klik tombol di bawah untuk melengkapi</div>`}
         </div>
 
-        <!-- Inline Edit Form -->
+        <!-- Inline edit form -->
         <div class="email-edit-form" id="edit-form-${item.id}">
-            <input type="email" class="email-edit-input" id="edit-input-${item.id}"
+            <input type="email" class="email-edit-input" id="edit-email-${item.id}"
                 placeholder="email@perusahaan.com"
                 value="${hasEmail ? esc(item.email) : ''}"
-                onkeydown="if(event.key==='Enter') window.simpanEmail('${item.id}')">
-            <button class="btn btn-primary btn-sm" onclick="window.simpanEmail('${item.id}')">
-                <i class="fas fa-check"></i> Simpan
-            </button>
-            <button class="btn btn-secondary btn-sm" onclick="window.toggleEdit('${item.id}', false)">
-                Batal
-            </button>
+                onkeydown="if(event.key==='Enter') window.simpanKontak('${item.id}')">
+        </div>
+        <!-- Kontak inline edit -->
+        <div id="kontak-form-${item.id}" class="hidden" style="margin-top:8px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+                <input type="text" class="email-edit-input" id="edit-kn-${item.id}"
+                    placeholder="Nama kontak person" value="${esc(item.kontakNama||'')}"
+                    style="min-width:0">
+                <input type="text" class="email-edit-input" id="edit-kj-${item.id}"
+                    placeholder="Jabatan" value="${esc(item.kontakJabatan||'')}"
+                    style="min-width:0">
+                <input type="tel" class="email-edit-input" id="edit-kt-${item.id}"
+                    placeholder="No. Telp / WA" value="${esc(item.kontakTelp||'')}"
+                    style="min-width:0">
+                <input type="email" class="email-edit-input" id="edit-ke-${item.id}"
+                    placeholder="Email kontak (opsional)" value="${esc(item.kontakEmail||'')}"
+                    style="min-width:0">
+            </div>
         </div>
 
-        <div class="card-actions">
-            <button class="btn btn-primary btn-sm" id="btn-isi-${item.id}"
+        <div class="card-actions" id="actions-${item.id}">
+            <button class="btn-inline btn-inline-primary" id="btn-edit-${item.id}"
                 onclick="window.toggleEdit('${item.id}', true)">
-                <i class="fas fa-${hasEmail ? 'pen' : 'plus'}"></i>
-                ${hasEmail ? 'Ubah Email' : 'Isi Email'}
+                <i class="fas fa-pen"></i>
+                ${hasEmail || hasKontak ? 'Ubah Email &amp; Kontak' : 'Isi Email &amp; Kontak'}
+            </button>
+            <button class="btn-inline btn-inline-secondary hidden" id="btn-save-${item.id}"
+                onclick="window.simpanKontak('${item.id}')">
+                <i class="fas fa-check"></i> Simpan
+            </button>
+            <button class="btn-inline btn-inline-secondary hidden" id="btn-cancel-${item.id}"
+                onclick="window.toggleEdit('${item.id}', false)">
+                Batal
             </button>
         </div>
     `;
@@ -1490,113 +1643,110 @@ function buildCard(item) {
 
 window.toggleEdit = function(id, show) {
     document.getElementById(`edit-form-${id}`).classList.toggle('show', show);
-    if (show) document.getElementById(`edit-input-${id}`).focus();
+    document.getElementById(`kontak-form-${id}`).classList.toggle('hidden', !show);
+    document.getElementById(`btn-edit-${id}`).classList.toggle('hidden', show);
+    document.getElementById(`btn-save-${id}`).classList.toggle('hidden', !show);
+    document.getElementById(`btn-cancel-${id}`).classList.toggle('hidden', !show);
+    if (show) document.getElementById(`edit-email-${id}`).focus();
 };
 
-window.simpanEmail = async function(id) {
-    const input = document.getElementById(`edit-input-${id}`);
-    const email = input.value.trim();
-    if (!email || !email.includes('@')) { toast('Masukkan alamat email yang valid.', 'warning'); return; }
+window.simpanKontak = async function(id) {
+    const email  = document.getElementById(`edit-email-${id}`).value.trim();
+    const kn     = document.getElementById(`edit-kn-${id}`).value.trim();
+    const kj     = document.getElementById(`edit-kj-${id}`).value.trim();
+    const kt     = document.getElementById(`edit-kt-${id}`).value.trim();
+    const ke     = document.getElementById(`edit-ke-${id}`).value.trim();
+
+    if (email && !email.includes('@')) { toast('Format email usaha tidak valid.', 'warning'); return; }
+    if (!kn || !kt) { toast('Nama dan No. Telepon kontak wajib diisi.', 'warning'); return; }
 
     try {
-        await updateDoc(doc(db, COL, id), { email });
+        const payload = { kontakNama: kn, kontakJabatan: kj, kontakTelp: kt, kontakEmail: ke };
+        if (email) payload.email = email;
+        await updateDoc(doc(db, COL, id), payload);
+
         // Update local state
         const item = allResults.find(r => r.id === id);
-        if (item) item.email = email;
+        if (item) Object.assign(item, payload);
 
-        // Update UI
+        // Refresh UI
         const sec = document.getElementById(`email-sec-${id}`);
-        sec.classList.add('has-email');
-        sec.innerHTML = `<div class="email-label"><i class="fas fa-envelope" style="margin-right:4px"></i>Alamat Email</div>
-                         <div class="email-value">${esc(email)}</div>`;
+        if (email) {
+            sec.classList.add('has-email');
+            sec.innerHTML = `<div class="email-sec-label"><i class="fas fa-envelope"></i> Email Usaha</div>
+                             <div class="email-value">${esc(email)}</div>`;
+        }
 
-        document.getElementById(`edit-form-${id}`).classList.remove('show');
-        document.getElementById(`btn-isi-${id}`).innerHTML = '<i class="fas fa-pen"></i> Ubah Email';
+        const kSec = document.getElementById(`kontak-sec-${id}`);
+        kSec.querySelector('[style*="Nama"] + .contact-value, .contact-value')
+        kSec.innerHTML = `
+            <div class="contact-header"><i class="fas fa-user-tie"></i> Kontak Person</div>
+            <div><div class="contact-label">Nama</div><div class="contact-value">${esc(kn)}</div></div>
+            <div><div class="contact-label">Jabatan</div><div class="contact-value">${esc(kj||'—')}</div></div>
+            <div><div class="contact-label">No. Telepon / WA</div><div class="contact-value">${esc(kt)}</div></div>
+            <div><div class="contact-label">Email Kontak</div><div class="contact-value">${esc(ke||'—')}</div></div>
+        `;
 
-        // Refresh stats
+        window.toggleEdit(id, false);
+        const btnEdit = document.getElementById(`btn-edit-${id}`);
+        btnEdit.innerHTML = '<i class="fas fa-pen"></i> Ubah Email &amp; Kontak';
+
         loadStats();
-        toast('Email berhasil disimpan!', 'success');
+        toast('Data berhasil disimpan!', 'success');
     } catch(e) {
         console.error(e);
         toast('Gagal menyimpan. Coba lagi.', 'error');
     }
 };
 
-// ─────────────────────────────────────────────
-// PAGINATION
-// ─────────────────────────────────────────────
+// ─── PAGINATION ───
 function renderPagination(total) {
-    const totalPages = Math.ceil(total / PAGE_SIZE);
+    const totalPages = Math.ceil(total/PAGE_SIZE);
     const pag = document.getElementById('pagination');
     pag.innerHTML = '';
     if (totalPages <= 1) return;
-
-    const addBtn = (label, page, isActive, isDisabled) => {
+    const add = (label, page, isActive, isDisabled) => {
         const btn = document.createElement('button');
         btn.className = 'page-btn' + (isActive ? ' active' : '');
-        btn.innerHTML = label;
-        btn.disabled  = isDisabled;
+        btn.innerHTML = label; btn.disabled = isDisabled;
         if (!isDisabled && !isActive) btn.onclick = () => { currentPage = page; renderPage(); };
         pag.appendChild(btn);
     };
-
-    addBtn('<i class="fas fa-chevron-left"></i>', currentPage - 1, false, currentPage === 1);
-    const range = getPageRange(currentPage, totalPages);
-    range.forEach(p => {
-        if (p === '…') {
-            const s = document.createElement('span');
-            s.className = 'page-btn';
-            s.textContent = '…';
-            s.style.cursor = 'default';
-            pag.appendChild(s);
-        } else {
-            addBtn(p, p, p === currentPage, false);
-        }
+    add('<i class="fas fa-chevron-left"></i>', currentPage-1, false, currentPage===1);
+    getPageRange(currentPage, totalPages).forEach(p => {
+        if (p==='…') { const s=document.createElement('span'); s.className='page-btn'; s.style.cursor='default'; s.textContent='…'; pag.appendChild(s); }
+        else add(p, p, p===currentPage, false);
     });
-    addBtn('<i class="fas fa-chevron-right"></i>', currentPage + 1, false, currentPage === totalPages);
+    add('<i class="fas fa-chevron-right"></i>', currentPage+1, false, currentPage===totalPages);
 }
-
 function getPageRange(cur, total) {
-    if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
-    if (cur <= 4) return [1,2,3,4,5,'…',total];
-    if (cur >= total - 3) return [1,'…',total-4,total-3,total-2,total-1,total];
+    if (total<=7) return Array.from({length:total},(_,i)=>i+1);
+    if (cur<=4)          return [1,2,3,4,5,'…',total];
+    if (cur>=total-3)    return [1,'…',total-4,total-3,total-2,total-1,total];
     return [1,'…',cur-1,cur,cur+1,'…',total];
 }
 
-// ─────────────────────────────────────────────
-// STATE MANAGEMENT
-// ─────────────────────────────────────────────
+// ─── STATE ───
 function setState(s) {
-    document.getElementById('state-idle').classList.toggle('hidden',    s !== 'idle');
-    document.getElementById('state-loading').classList.toggle('hidden', s !== 'loading');
-    document.getElementById('state-empty').classList.toggle('hidden',   s !== 'empty');
-    document.getElementById('results-area').classList.toggle('hidden',  s !== 'results');
+    document.getElementById('state-idle').classList.toggle('hidden',    s!=='idle');
+    document.getElementById('state-loading').classList.toggle('hidden', s!=='loading');
+    document.getElementById('state-empty').classList.toggle('hidden',   s!=='empty');
+    document.getElementById('results-area').classList.toggle('hidden',  s!=='results');
 }
 
-// ─────────────────────────────────────────────
-// MODAL HELPERS
-// ─────────────────────────────────────────────
-window.bukaModalTambah = function() {
-    document.getElementById('modal-tambah').classList.add('open');
-};
-window.bukaModalUpload = function() {
+// ─── MODALS ───
+window.bukaModalTambah = () => document.getElementById('modal-tambah').classList.add('open');
+window.bukaModalUpload = () => {
     document.getElementById('modal-upload').classList.add('open');
     document.getElementById('input-excel').value = '';
     document.getElementById('progress-wrap').classList.remove('show');
-    document.getElementById('upload-area').classList.remove('drag-over');
 };
-window.tutupModal = function(id) {
-    document.getElementById(id).classList.remove('open');
-};
+window.tutupModal = (id) => document.getElementById(id).classList.remove('open');
+document.querySelectorAll('.modal-overlay').forEach(el =>
+    el.addEventListener('click', e => { if (e.target===el) el.classList.remove('open'); })
+);
 
-// Close on overlay click
-document.querySelectorAll('.modal-overlay').forEach(el => {
-    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
-});
-
-// ─────────────────────────────────────────────
-// SIMPAN USAHA BARU (SATU PERSATU)
-// ─────────────────────────────────────────────
+// ─── SIMPAN USAHA BARU ───
 window.simpanUsahaBaru = async function() {
     const nib    = document.getElementById('tambah-nib').value.trim();
     const nama   = document.getElementById('tambah-nama').value.trim();
@@ -1604,165 +1754,122 @@ window.simpanUsahaBaru = async function() {
     const kab    = document.getElementById('tambah-kab').value;
     const alamat = document.getElementById('tambah-alamat').value.trim();
     const email  = document.getElementById('tambah-email').value.trim();
+    const kNama  = document.getElementById('tambah-kontak-nama').value.trim();
+    const kJab   = document.getElementById('tambah-kontak-jabatan').value.trim();
+    const kTelp  = document.getElementById('tambah-kontak-telp').value.trim();
+    const kEmail = document.getElementById('tambah-kontak-email').value.trim();
 
-    if (!nib || !nama || !kab || !alamat || !email) {
-        toast('Semua kolom bertanda * wajib diisi.', 'warning');
-        return;
+    if (!nib||!nama||!kab||!alamat||!email||!kNama||!kTelp) {
+        toast('Kolom bertanda * wajib diisi.', 'warning'); return;
     }
-    if (!email.includes('@')) { toast('Format email tidak valid.', 'warning'); return; }
+    if (!email.includes('@')) { toast('Format email usaha tidak valid.', 'warning'); return; }
 
     try {
         await addDoc(collection(db, COL), {
-            nib, namaUsaha: nama, namaKomersil: kom || nama,
+            nib, namaUsaha: nama, namaKomersil: kom||nama,
             prov: 'Lampung', kabkot: kab, alamat, email,
+            kontakNama: kNama, kontakJabatan: kJab, kontakTelp: kTelp, kontakEmail: kEmail,
             createdAt: new Date().toISOString()
         });
         tutupModal('modal-tambah');
-        // Reset form
-        ['tambah-nib','tambah-nama','tambah-komersil','tambah-alamat','tambah-email'].forEach(id => {
-            document.getElementById(id).value = '';
-        });
+        ['tambah-nib','tambah-nama','tambah-komersil','tambah-alamat','tambah-email',
+         'tambah-kontak-nama','tambah-kontak-jabatan','tambah-kontak-telp','tambah-kontak-email']
+            .forEach(id => { document.getElementById(id).value = ''; });
         document.getElementById('tambah-kab').value = '';
         loadStats();
         toast('Usaha baru berhasil ditambahkan!', 'success');
     } catch(e) {
         console.error(e);
-        toast('Gagal menyimpan data. Periksa konfigurasi Firebase.', 'error');
+        toast('Gagal menyimpan. Periksa konfigurasi Firebase.', 'error');
     }
 };
 
-// ─────────────────────────────────────────────
-// UPLOAD EXCEL (MASSAL)
-// ─────────────────────────────────────────────
-window.dragOver = function(e) {
-    e.preventDefault();
-    document.getElementById('upload-area').classList.add('drag-over');
-};
-window.dragLeave = function() {
-    document.getElementById('upload-area').classList.remove('drag-over');
-};
-window.dropFile = function(e) {
-    e.preventDefault();
-    document.getElementById('upload-area').classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) prosesFile(file);
-};
-
-window.prosesUploadExcel = function(e) {
-    const file = e.target.files[0];
-    if (file) prosesFile(file);
-};
+// ─── UPLOAD EXCEL ───
+window.dragOver  = e => { e.preventDefault(); document.getElementById('upload-area').classList.add('drag-over'); };
+window.dragLeave = () => document.getElementById('upload-area').classList.remove('drag-over');
+window.dropFile  = e => { e.preventDefault(); document.getElementById('upload-area').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) prosesFile(f); };
+window.prosesUploadExcel = e => { const f=e.target.files[0]; if(f) prosesFile(f); };
 
 function prosesFile(file) {
-    const ext = file.name.split('.').pop().toLowerCase();
-    if (!['xlsx','xls'].includes(ext)) {
-        toast('Format file harus .xlsx atau .xls', 'error');
-        return;
+    if (!['xlsx','xls'].includes(file.name.split('.').pop().toLowerCase())) {
+        toast('Format file harus .xlsx atau .xls', 'error'); return;
     }
-
     const reader = new FileReader();
     reader.onload = async function(ev) {
         const wb   = XLSX.read(ev.target.result, { type: 'binary' });
-        const ws   = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+        if (!rows.length) { toast('File Excel kosong.', 'warning'); return; }
 
-        if (rows.length === 0) { toast('File Excel kosong.', 'warning'); return; }
-
-        // Validasi kolom
-        const first  = rows[0];
         const needed = ['NIB','Nama Usaha','Kabupaten/Kota','Alamat'];
-        const missing = needed.filter(k => !(k in first));
-        if (missing.length) {
-            toast(`Kolom tidak ditemukan: ${missing.join(', ')}. Gunakan template yang disediakan.`, 'error');
-            return;
-        }
+        const missing = needed.filter(k => !(k in rows[0]));
+        if (missing.length) { toast(`Kolom tidak ditemukan: ${missing.join(', ')}`, 'error'); return; }
 
-        // Progress UI
         const wrap = document.getElementById('progress-wrap');
         const fill = document.getElementById('progress-fill');
         const pct  = document.getElementById('progress-pct');
         const txt  = document.getElementById('progress-text');
         wrap.classList.add('show');
 
-        const total    = rows.length;
-        let done       = 0;
-        let gagal      = 0;
-        const CHUNK    = 400; // Firestore max batch = 500, ambil 400 untuk aman
+        const total = rows.length;
+        let done = 0, gagal = 0;
 
-        for (let i = 0; i < total; i += CHUNK) {
-            const chunk = rows.slice(i, i + CHUNK);
+        for (let i = 0; i < total; i += 400) {
+            const chunk = rows.slice(i, i+400);
             const batch = writeBatch(db);
-
             chunk.forEach(row => {
-                const newDoc = doc(collection(db, COL));
-                batch.set(newDoc, {
-                    nib:          String(row['NIB'] || '').trim(),
-                    namaUsaha:    String(row['Nama Usaha'] || '').trim(),
-                    namaKomersil: String(row['Nama Komersil'] || row['Nama Usaha'] || '').trim(),
-                    prov:         'Lampung',
-                    kabkot:       String(row['Kabupaten/Kota'] || '').trim(),
-                    alamat:       String(row['Alamat'] || '').trim(),
-                    email:        String(row['Email'] || '').trim(),
-                    createdAt:    new Date().toISOString()
+                const nd = doc(collection(db, COL));
+                batch.set(nd, {
+                    nib:           String(row['NIB']||'').trim(),
+                    namaUsaha:     String(row['Nama Usaha']||'').trim(),
+                    namaKomersil:  String(row['Nama Komersil']||row['Nama Usaha']||'').trim(),
+                    prov:          'Lampung',
+                    kabkot:        String(row['Kabupaten/Kota']||'').trim(),
+                    alamat:        String(row['Alamat']||'').trim(),
+                    email:         String(row['Email']||'').trim(),
+                    kontakNama:    String(row['Nama Kontak']||'').trim(),
+                    kontakJabatan: String(row['Jabatan Kontak']||'').trim(),
+                    kontakTelp:    String(row['Telp Kontak']||'').trim(),
+                    kontakEmail:   String(row['Email Kontak']||'').trim(),
+                    createdAt:     new Date().toISOString()
                 });
             });
-
-            try {
-                await batch.commit();
-                done += chunk.length;
-            } catch(e) {
-                console.error(e);
-                gagal += chunk.length;
-            }
-
-            const p = Math.round((done + gagal) / total * 100);
-            fill.style.width = p + '%';
-            pct.textContent  = p + '%';
-            txt.textContent  = `Mengirim ${Math.min(done + gagal, total)} dari ${total} data…`;
+            try { await batch.commit(); done += chunk.length; }
+            catch(e) { console.error(e); gagal += chunk.length; }
+            const p = Math.round((done+gagal)/total*100);
+            fill.style.width = p+'%'; pct.textContent = p+'%';
+            txt.textContent  = `Mengirim ${Math.min(done+gagal, total)} dari ${total} data…`;
         }
-
         loadStats();
-        toast(`✅ ${done} data berhasil dikirim${gagal > 0 ? `, ${gagal} gagal` : ''}.`, done > 0 ? 'success' : 'error');
+        toast(`${done} data berhasil dikirim${gagal > 0 ? `, ${gagal} gagal` : ''}.`, done > 0 ? 'success' : 'error');
     };
     reader.readAsBinaryString(file);
 }
 
-// ─────────────────────────────────────────────
-// DOWNLOAD TEMPLATE EXCEL
-// ─────────────────────────────────────────────
+// ─── DOWNLOAD TEMPLATE ───
 window.downloadTemplate = function() {
-    const headers = [['NIB','Nama Usaha','Nama Komersil','Kabupaten/Kota','Alamat','Email']];
+    const headers = [['NIB','Nama Usaha','Nama Komersil','Kabupaten/Kota','Alamat','Email',
+                       'Nama Kontak','Jabatan Kontak','Telp Kontak','Email Kontak']];
     const ws = XLSX.utils.aoa_to_sheet(headers);
-    // Lebar kolom
-    ws['!cols'] = [
-        {wch:20},{wch:40},{wch:40},{wch:20},{wch:50},{wch:35}
-    ];
+    ws['!cols'] = [{wch:20},{wch:40},{wch:40},{wch:22},{wch:50},{wch:35},{wch:30},{wch:25},{wch:20},{wch:35}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Template');
     XLSX.writeFile(wb, 'Template_Upload_Usaha_SE2026.xlsx');
     toast('Template berhasil diunduh!', 'success');
 };
 
-// ─────────────────────────────────────────────
-// TOAST NOTIFICATIONS
-// ─────────────────────────────────────────────
-window.toast = function(msg, type = 'info') {
-    const icons = { info: 'fa-info-circle', success: 'fa-check-circle', error: 'fa-exclamation-triangle', warning: 'fa-exclamation-circle' };
+// ─── TOAST ───
+window.toast = function(msg, type='info') {
+    const icons = { info:'fa-info-circle', success:'fa-check-circle', error:'fa-exclamation-triangle', warning:'fa-exclamation-circle' };
     const el = document.createElement('div');
     el.className = `toast ${type}`;
     el.innerHTML = `<i class="fas ${icons[type]} toast-icon"></i><span>${msg}</span>`;
     document.getElementById('toast-container').appendChild(el);
-    setTimeout(() => {
-        el.style.animation = 'toastOut .3s ease forwards';
-        setTimeout(() => el.remove(), 300);
-    }, 4500);
+    setTimeout(() => { el.style.animation = 'toastOut .25s ease forwards'; setTimeout(() => el.remove(), 250); }, 4000);
 };
 
-// ─────────────────────────────────────────────
-// UTILITY
-// ─────────────────────────────────────────────
-function esc(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ─── UTILITY ───
+function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 </script>
